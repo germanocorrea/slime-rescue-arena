@@ -1879,7 +1879,7 @@ resource_local_to_scene = true
 radius = 5.28
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_0hol4"]
-radius = 31.016125
+radius = 96.0833
 
 [sub_resource type="WorldBoundaryShape2D" id="WorldBoundaryShape2D_7mj2a"]
 distance = -647.0
@@ -22461,7 +22461,7 @@ node_a = NodePath("..")
 node_b = NodePath("../../Bone-224")
 softness = 9.5
 
-[node name="CharacterBody2D" type="CharacterBody2D" parent="Node" unique_id=1508923313]
+[node name="CharacterBody2D" type="RigidBody2D" parent="Node" unique_id=2042746866]
 position = Vector2(340, 114)
 collision_layer = 2
 collision_mask = 2
@@ -22471,10 +22471,15 @@ script = ExtResource("4_0hol4")
 position = Vector2(152, 145)
 shape = SubResource("CircleShape2D_0hol4")
 
-[node name="Joint" type="PinJoint2D" parent="Node/CharacterBody2D" unique_id=1728180436]
-position = Vector2(150, 143)
+[node name="PinJoint2D" type="PinJoint2D" parent="Node/CharacterBody2D" unique_id=492335611]
+position = Vector2(94, 140)
 node_a = NodePath("..")
-node_b = NodePath("../../SoftBody2D/Bone-112")
+node_b = NodePath("../../SoftBody2D/Bone-31")
+
+[node name="PinJoint2D2" type="PinJoint2D" parent="Node/CharacterBody2D" unique_id=1637431690]
+position = Vector2(203, 141)
+node_a = NodePath("..")
+node_b = NodePath("../../SoftBody2D/Bone-193")
 
 [node name="StaticBody2D" type="StaticBody2D" parent="." unique_id=354262981]
 collision_layer = 3
