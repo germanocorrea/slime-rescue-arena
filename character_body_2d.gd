@@ -3,6 +3,7 @@ extends CharacterBody2D
 
 const SPEED = 600.0
 const JUMP_VELOCITY = -900.0
+const BOUNCE_STRENGTH = 0.8
 
 
 func _physics_process(delta: float) -> void:
@@ -18,10 +19,11 @@ func _physics_process(delta: float) -> void:
 	else:
 		velocity.x = move_toward(velocity.x, 0, SPEED)
 
-	#var collision_info = move_and_collide(velocity)
-	#if collision_info:
-		#velocity = velocity * 0.9
-		#velocity = velocity.bounce(collision_info.get_normal())
-
-#
+	var tmp_velocity := velocity
 	move_and_slide()
+	
+	for i in get_slide_collision_count():
+		var collision := get_slide_collision(i)
+		if collision:
+			velocity = tmp_velocity.bounce(collision.get_normal()) * BOUNCE_STRENGTH
+	
