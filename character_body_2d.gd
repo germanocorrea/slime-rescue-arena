@@ -20,7 +20,7 @@ func process_jump(delta: float) -> void:
 	if not is_just_enough_close_to_floor():
 		velocity += get_gravity() * delta
 
-	if Input.is_action_just_pressed("ui_up") and is_just_enough_close_to_floor():
+	if Input.is_action_pressed("ui_up") and is_just_enough_close_to_floor():
 		velocity.y = JUMP_VELOCITY
 
 func process_lateral_movement() -> void:
