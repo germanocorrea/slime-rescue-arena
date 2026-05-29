@@ -7,7 +7,7 @@
 [ext_resource type="Shader" uid="uid://bxo2n0rrsyvuj" path="res://pixelated.gdshader" id="5_q6r6c"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_0hol4"]
-radius = 1.0
+radius = 19.026299
 
 [sub_resource type="SkeletonModification2DLookAt" id="SkeletonModification2DLookAt_kdubu"]
 resource_local_to_scene = true
@@ -4760,6 +4760,7 @@ node_b = NodePath("../../Bone-50")
 softness = 9.5
 
 [node name="BackBufferCopy" type="BackBufferCopy" parent="Node" unique_id=2102997001]
+visible = false
 position = Vector2(576, 324)
 scale = Vector2(5.77, 3.25)
 copy_mode = 2
