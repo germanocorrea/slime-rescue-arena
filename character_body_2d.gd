@@ -8,6 +8,7 @@ const ACCELERATION = 1200.0
 const FRICTION = 1450.0
 
 var bounce_cooldown := 0.0
+var score := 0
 
 func _physics_process(delta: float) -> void:
 	process_movement(delta)
@@ -21,6 +22,8 @@ func process_jump(delta: float) -> void:
 
 	if Input.is_action_pressed("ui_up") and is_on_floor():
 		velocity.y = JUMP_VELOCITY
+		score += 1
+		get_tree().call_group("hud", "update_score", score)
 
 func process_lateral_movement(delta: float) -> void:
 	var direction := Input.get_axis("ui_left", "ui_right")
