@@ -1,7 +1,7 @@
 [gd_scene format=4 uid="uid://cfujeqmgailhh"]
 
 [ext_resource type="PackedScene" uid="uid://qlhfu8wwk8bw" path="res://slime_character.tscn" id="1_wtcfe"]
-[ext_resource type="Texture2D" uid="uid://cvqul3bfm1hpl" path="res://assets/tilesetLimpo1.png" id="2_0e48y"]
+[ext_resource type="Texture2D" uid="uid://cvqul3bfm1hpl" path="res://assets/Tilesets/tilesetLimpo1.png" id="2_0e48y"]
 [ext_resource type="Script" uid="uid://vgscgo0mc8iv" path="res://hud.gd" id="3_epypp"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_epypp"]
@@ -124,3 +124,7 @@ offset_right = 40.0
 offset_bottom = 23.0
 theme_override_font_sizes/font_size = 50
 text = "Score: 0"
+
+[node name="TextureRect" type="TextureRect" parent="." unique_id=1466961296]
+offset_right = 921.0
+offset_bottom = 762.0
