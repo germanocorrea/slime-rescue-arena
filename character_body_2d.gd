@@ -16,9 +16,16 @@ func _physics_process(delta: float) -> void:
 	move_and_slide()
 	bounce_response(before_slide_velocity, delta)
 
+func get_custom_gravity():
+	var gravity_multiplier := 1.0
+	if Input.is_action_pressed("ui_down"):
+		gravity_multiplier = 2.0
+
+	return get_gravity() * gravity_multiplier
+
 func process_jump(delta: float) -> void:
 	if not is_on_floor():
-		velocity += get_gravity() * delta
+		velocity += get_custom_gravity() * delta
 
 	if Input.is_action_pressed("ui_up") and is_on_floor():
 		velocity.y = JUMP_VELOCITY
