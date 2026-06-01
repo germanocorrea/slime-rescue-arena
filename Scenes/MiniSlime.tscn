@@ -1,0 +1,20 @@
+[gd_scene format=3 uid="uid://bwge4efmmwxo5"]
+
+[ext_resource type="Script" uid="uid://dtblwsjeck211" path="res://Scenes/mini_slime.gd" id="1_cj5e8"]
+[ext_resource type="Texture2D" uid="uid://buq8n2bdw1hq6" path="res://assets/Minislimes/MiniSlime1.png" id="1_j8jfc"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_cj5e8"]
+radius = 27.0
+
+[node name="MiniSlime" type="Area2D" unique_id=1222580752]
+script = ExtResource("1_cj5e8")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1996917598]
+light_mask = 513
+texture = ExtResource("1_j8jfc")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=692955369]
+position = Vector2(0, 5)
+shape = SubResource("CircleShape2D_cj5e8")
+
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]
