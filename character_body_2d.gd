@@ -13,6 +13,32 @@ var score := 0
 @onready var initial_position: Vector2 = global_position
 var is_respawning := false
 
+func _ready() -> void:
+	# Save initial position
+	initial_position = global_position
+	
+	var softbody = get_parent().get_node_or_null("SoftBody2D")
+	if softbody:
+		# Enable CCD (Continuous Collision Detection) on all softbody rigid body bones.
+		# This guarantees that the fast-moving bones will not tunnel/clip through 
+		# colliders (like the ground tilemap) on high-speed fall impacts.
+		for child in softbody.get_children():
+			if child is RigidBody2D:
+				child.continuous_cd = RigidBody2D.CCD_MODE_CAST_SHAPE
+		
+		# Align the SoftBody2D to prevent massive joint correction forces on the first frame
+		var bone_28 = softbody.get_node_or_null("Bone-28")
+		var joint = get_node_or_null("Joint")
+		if bone_28 and joint:
+			var joint_global_pos = joint.global_position
+			var bone_global_pos = bone_28.global_position
+			var alignment_offset = joint_global_pos - bone_global_pos
+			
+			softbody.global_position += alignment_offset
+			for child in softbody.get_children():
+				if child is RigidBody2D:
+					child.global_position += alignment_offset
+
 func _physics_process(delta: float) -> void:
 	process_movement(delta)
 	var before_slide_velocity := velocity
