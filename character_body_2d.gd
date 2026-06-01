@@ -70,48 +70,40 @@ func respawn() -> void:
 		return
 	is_respawning = true
 	
-	# Decrease 2 points
-	add_score(-2)
+	# Calculate the score after penalty (clamped at 0)
+	var new_score = max(0, score - 2)
 	
 	# Make the character and softbody disappear
-	var softbody = get_parent().get_node_or_null("SoftBody2D")
+	var slime_root = get_parent()
+	var softbody = slime_root.get_node_or_null("SoftBody2D")
 	if softbody:
 		softbody.visible = false
 	visible = false
-	set_physics_process(false)
 	
-	# Freeze all rigid body bones to stop physics simulation during transition
-	if softbody:
-		for child in softbody.get_children():
-			if child is RigidBody2D:
-				child.freeze = true
-				child.linear_velocity = Vector2.ZERO
-				child.angular_velocity = 0.0
-
-	# Wait for 0.8 seconds to represent the disappearance duration
+	# Stop updates on this node during transition
+	set_physics_process(false)
+	set_process(false)
+	
+	# Wait for 0.8 seconds (representing the disappeared/death duration)
 	await get_tree().create_timer(0.8).timeout
 	
-	# Calculate offset to teleport to initial position
-	var offset = initial_position - global_position
-	global_position = initial_position
-	velocity = Vector2.ZERO
+	# Re-instantiate the slime character
+	var character_scene = load("res://slime_character.tscn")
+	var new_character = character_scene.instantiate()
 	
-	# Teleport all softbody rigid body bones by the same offset and unfreeze them
-	if softbody:
-		for child in softbody.get_children():
-			if child is RigidBody2D:
-				child.global_position += offset
-				child.freeze = false
-				child.linear_velocity = Vector2.ZERO
-				child.angular_velocity = 0.0
-
-	# Make the character and softbody reappear
-	if softbody:
-		softbody.visible = true
-	visible = true
-	set_physics_process(true)
+	# Pass the clamped score to the new character's body
+	var new_char_body = new_character.get_node("CharacterBody2D")
+	new_char_body.score = new_score
 	
-	is_respawning = false
+	# Add the new character to the level scene (the grandparent)
+	var level_root = slime_root.get_parent()
+	level_root.add_child(new_character)
+	
+	# Force the HUD to update with the new score
+	new_char_body.add_score(0)
+	
+	# Remove the old character completely from the game
+	slime_root.queue_free()
 
 func process_lateral_movement(delta: float) -> void:
 	var direction := Input.get_axis("ui_left", "ui_right")
