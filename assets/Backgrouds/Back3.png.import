@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://de8s8vltmd1xc"
-path="res://.godot/imported/Slime1.png-3a10608894d99329ed5190040bb33bf4.ctex"
+uid="uid://bq5wld7wenlr7"
+path="res://.godot/imported/Back3.png-d6872295e2b099c18b7ffacaed9585a8.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Slime1.png"
-dest_files=["res://.godot/imported/Slime1.png-3a10608894d99329ed5190040bb33bf4.ctex"]
+source_file="res://assets/Backgrouds/Back3.png"
+dest_files=["res://.godot/imported/Back3.png-d6872295e2b099c18b7ffacaed9585a8.ctex"]
 
 [params]
 

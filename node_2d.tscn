@@ -1,8 +1,12 @@
 [gd_scene format=4 uid="uid://cfujeqmgailhh"]
 
+[ext_resource type="Texture2D" uid="uid://bq5wld7wenlr7" path="res://assets/Backgrouds/Back3.png" id="1_kdubu"]
 [ext_resource type="PackedScene" uid="uid://qlhfu8wwk8bw" path="res://slime_character.tscn" id="1_wtcfe"]
-[ext_resource type="Texture2D" uid="uid://cvqul3bfm1hpl" path="res://assets/tilesetLimpo1.png" id="2_0e48y"]
+[ext_resource type="Texture2D" uid="uid://cvqul3bfm1hpl" path="res://assets/Tilesets/tilesetLimpo1.png" id="2_0e48y"]
+[ext_resource type="Texture2D" uid="uid://br0owj1e40m5b" path="res://assets/Backgrouds/Back2.png" id="2_d21ai"]
 [ext_resource type="Script" uid="uid://vgscgo0mc8iv" path="res://hud.gd" id="3_epypp"]
+[ext_resource type="Texture2D" uid="uid://n2fexwi4ykvr" path="res://assets/Backgrouds/Back1.png" id="3_rj586"]
+[ext_resource type="PackedScene" uid="uid://j6rm5xs66rjc" path="res://Scenes/Spawner.tscn" id="4_rj586"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_epypp"]
 texture = ExtResource("2_0e48y")
@@ -106,6 +110,35 @@ sources/0 = SubResource("TileSetAtlasSource_epypp")
 
 [node name="Node2D" type="Node2D" unique_id=1837477100]
 
+[node name="Background" type="TextureRect" parent="." unique_id=1283996241]
+offset_right = 1915.0
+offset_bottom = 1097.0
+texture = ExtResource("1_kdubu")
+stretch_mode = 1
+
+[node name="TextureRect" type="TextureRect" parent="Background" unique_id=478009202]
+layout_mode = 0
+offset_right = 1915.0
+offset_bottom = 1097.0
+texture = ExtResource("2_d21ai")
+stretch_mode = 1
+
+[node name="TextureRect" type="TextureRect" parent="Background/TextureRect" unique_id=1363033443]
+layout_mode = 0
+offset_right = 1915.0
+offset_bottom = 1097.0
+texture = ExtResource("3_rj586")
+stretch_mode = 1
+
+[node name="Spawner" parent="Background/TextureRect" unique_id=488881207 instance=ExtResource("4_rj586")]
+position = Vector2(1457, 416)
+
+[node name="Spawner2" parent="Background/TextureRect" unique_id=111402265 instance=ExtResource("4_rj586")]
+position = Vector2(160, 376)
+
+[node name="Spawner3" parent="Background/TextureRect" unique_id=1044064850 instance=ExtResource("4_rj586")]
+position = Vector2(259, 913)
+
 [node name="SlimeCharacter" parent="." unique_id=647829573 instance=ExtResource("1_wtcfe")]
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=1123040152]
@@ -124,3 +157,6 @@ offset_right = 40.0
 offset_bottom = 23.0
 theme_override_font_sizes/font_size = 50
 text = "Score: 0"
+
+[node name="Spawner" parent="." unique_id=888409246 instance=ExtResource("4_rj586")]
+position = Vector2(1236, 944)

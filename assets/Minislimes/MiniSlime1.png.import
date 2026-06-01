@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cvqul3bfm1hpl"
-path="res://.godot/imported/tilesetLimpo1.png-44e2ae9626e96fbe4f71e03e5ec5a3f0.ctex"
+uid="uid://buq8n2bdw1hq6"
+path="res://.godot/imported/MiniSlime1.png-99c1d70e6317667fb1941310e72689d3.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/tilesetLimpo1.png"
-dest_files=["res://.godot/imported/tilesetLimpo1.png-44e2ae9626e96fbe4f71e03e5ec5a3f0.ctex"]
+source_file="res://assets/Minislimes/MiniSlime1.png"
+dest_files=["res://.godot/imported/MiniSlime1.png-99c1d70e6317667fb1941310e72689d3.ctex"]
 
 [params]
 
