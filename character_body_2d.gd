@@ -22,8 +22,10 @@ func process_jump(delta: float) -> void:
 
 	if Input.is_action_pressed("ui_up") and is_on_floor():
 		velocity.y = JUMP_VELOCITY
-		score += 1
-		get_tree().call_group("hud", "update_score", score)
+
+func add_score(amount: int) -> void:
+	score += amount
+	get_tree().call_group("hud", "update_score", score)
 
 func process_lateral_movement(delta: float) -> void:
 	var direction := Input.get_axis("ui_left", "ui_right")
