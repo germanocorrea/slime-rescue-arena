@@ -8,6 +8,8 @@
 [ext_resource type="Texture2D" uid="uid://n2fexwi4ykvr" path="res://assets/Backgrouds/Back1.png" id="3_rj586"]
 [ext_resource type="PackedScene" uid="uid://j6rm5xs66rjc" path="res://Scenes/Spawner.tscn" id="4_rj586"]
 [ext_resource type="Texture2D" uid="uid://c2ts48capxm46" path="res://assets/death_block.png" id="8_km5ld"]
+[ext_resource type="PackedScene" uid="uid://5ym3wyqd7ms6" path="res://Scenes/killing_block.tscn" id="9_kill"]
+
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_epypp"]
 texture = ExtResource("2_0e48y")
@@ -165,13 +167,6 @@ text = "Score: 0"
 [node name="Spawner" parent="." unique_id=888409246 instance=ExtResource("4_rj586")]
 position = Vector2(1236, 944)
 
-[node name="RigidBody2D" type="RigidBody2D" parent="." unique_id=1246345353]
+[node name="Killing Block" parent="." unique_id=1246345353 instance=ExtResource("9_kill")]
 position = Vector2(500, 1023)
-metadata/_edit_group_ = true
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="RigidBody2D" unique_id=96154307]
-position = Vector2(0, 1)
-shape = SubResource("RectangleShape2D_i2t4f")
-
-[node name="Sprite2D" type="Sprite2D" parent="RigidBody2D" unique_id=1396156275]
-texture = ExtResource("8_km5ld")
