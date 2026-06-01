@@ -7,6 +7,7 @@
 [ext_resource type="Script" uid="uid://vgscgo0mc8iv" path="res://hud.gd" id="3_epypp"]
 [ext_resource type="Texture2D" uid="uid://n2fexwi4ykvr" path="res://assets/Backgrouds/Back1.png" id="3_rj586"]
 [ext_resource type="PackedScene" uid="uid://j6rm5xs66rjc" path="res://Scenes/Spawner.tscn" id="4_rj586"]
+[ext_resource type="Texture2D" uid="uid://c2ts48capxm46" path="res://assets/death_block.png" id="8_km5ld"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_epypp"]
 texture = ExtResource("2_0e48y")
@@ -108,6 +109,9 @@ physics_layer_0/collision_layer = 3
 physics_layer_0/collision_mask = 3
 sources/0 = SubResource("TileSetAtlasSource_epypp")
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_i2t4f"]
+size = Vector2(62, 62)
+
 [node name="Node2D" type="Node2D" unique_id=1837477100]
 
 [node name="Background" type="TextureRect" parent="." unique_id=1283996241]
@@ -160,3 +164,14 @@ text = "Score: 0"
 
 [node name="Spawner" parent="." unique_id=888409246 instance=ExtResource("4_rj586")]
 position = Vector2(1236, 944)
+
+[node name="RigidBody2D" type="RigidBody2D" parent="." unique_id=1246345353]
+position = Vector2(500, 1023)
+metadata/_edit_group_ = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="RigidBody2D" unique_id=96154307]
+position = Vector2(0, 1)
+shape = SubResource("RectangleShape2D_i2t4f")
+
+[node name="Sprite2D" type="Sprite2D" parent="RigidBody2D" unique_id=1396156275]
+texture = ExtResource("8_km5ld")
