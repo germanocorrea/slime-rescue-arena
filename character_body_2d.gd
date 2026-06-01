@@ -26,6 +26,8 @@ func process_jump(delta: float) -> void:
 func add_score(amount: int) -> void:
 	score += amount
 	get_tree().call_group("hud", "update_score", score)
+	if score >= 500:
+		get_tree().call_group("game_manager", "end_game", score)
 
 func process_lateral_movement(delta: float) -> void:
 	var direction := Input.get_axis("ui_left", "ui_right")

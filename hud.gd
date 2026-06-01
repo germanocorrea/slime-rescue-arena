@@ -39,7 +39,10 @@ func setup_timer() -> void:
 	timer.timeout.connect(_on_timer_timeout)
 	add_child(timer)
 
+var current_score := 0
+
 func update_score(new_score: int) -> void:
+	current_score = new_score
 	score_label.text = "Score: " + str(new_score)
 
 func update_timer_display() -> void:
@@ -55,3 +58,4 @@ func _on_timer_timeout() -> void:
 		update_timer_display()
 		if time_left == 0.0:
 			timer.stop()
+			get_tree().call_group("game_manager", "end_game", current_score)
