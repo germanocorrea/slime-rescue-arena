@@ -1,11 +1,16 @@
 extends CharacterBody2D
 
+@export var default__max_speed = 600.0
+@export var default__jump_velocity = -900.0
+@export var default__bounce_strength = 0.8
+@export var default__acceleration = 1200.0
+@export var default__friction = 1450.0
 
-const MAX_SPEED = 600.0
-const JUMP_VELOCITY = -900.0
-const BOUNCE_STRENGTH = 0.8
-const ACCELERATION = 1200.0
-const FRICTION = 1450.0
+var max_speed: float
+var jump_velocity: float
+var bounce_strength: float
+var acceleration: float
+var friction: float
 
 var bounce_cooldown := 0.0
 var score := 0
@@ -13,9 +18,17 @@ var score := 0
 @onready var initial_position: Vector2 = global_position
 var is_respawning := false
 
+func restar_properties() -> void:
+	max_speed = default__max_speed
+	jump_velocity = default__jump_velocity
+	bounce_strength = default__bounce_strength
+	acceleration = default__acceleration
+	friction = default__friction
+
 func _ready() -> void:
 	# Save initial position
 	initial_position = global_position
+	restar_properties()
 	
 	var softbody = get_parent().get_node_or_null("SoftBody2D")
 	if softbody:
@@ -57,7 +70,7 @@ func process_jump(delta: float) -> void:
 		velocity += get_custom_gravity() * delta
 
 	if Input.is_action_pressed("ui_up") and is_on_floor():
-		velocity.y = JUMP_VELOCITY
+		velocity.y = jump_velocity
 
 func add_score(amount: int) -> void:
 	score = max(0, score + amount)
@@ -108,7 +121,7 @@ func respawn() -> void:
 func process_lateral_movement(delta: float) -> void:
 	var direction := Input.get_axis("ui_left", "ui_right")
 	if direction:
-		velocity.x = move_toward(velocity.x, direction * MAX_SPEED, ACCELERATION * delta)
+		velocity.x = move_toward(velocity.x, direction * max_speed, acceleration * delta)
 
 func process_movement(delta: float) -> void:
 	process_jump(delta)
@@ -130,13 +143,12 @@ func bounce_response(before_slide_velocity: Vector2, delta: float) -> void:
 			respawn()
 			continue
 
-		velocity.x = move_toward(velocity.x, 0, FRICTION * delta)
+		velocity.x = move_toward(velocity.x, 0, friction * delta)
 
 		if bounce_breaks:
 			continue
 
-		velocity = before_slide_velocity.bounce(collision.get_normal()) * BOUNCE_STRENGTH
+		velocity = before_slide_velocity.bounce(collision.get_normal()) * bounce_strength
 
 		if abs(collision.get_normal().x) > 0.5:
 			bounce_cooldown = 0.2
-
