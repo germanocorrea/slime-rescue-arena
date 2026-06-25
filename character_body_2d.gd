@@ -16,6 +16,7 @@ var is_respawning := false
 func _ready() -> void:
 	# Save initial position
 	initial_position = global_position
+	add_to_group("slime")
 	
 	var softbody = get_parent().get_node_or_null("SoftBody2D")
 	if softbody:
@@ -25,6 +26,16 @@ func _ready() -> void:
 		for child in softbody.get_children():
 			if child is RigidBody2D:
 				child.continuous_cd = RigidBody2D.CCD_MODE_CAST_SHAPE
+				child.add_to_group("slime")
+				
+				# Allow each softbody bone (the slime's outer "skin") to report
+				# physical contacts. Without this, only the core CharacterBody2D
+				# shape can ever detect the killing block, and touching the block
+				# with an arm/leg/edge of the soft body would be ignored.
+				child.contact_monitor = true
+				child.max_contacts_reported = max(child.max_contacts_reported, 4)
+				if not child.body_entered.is_connected(_on_softbody_bone_body_entered):
+					child.body_entered.connect(_on_softbody_bone_body_entered)
 		
 		# Align the SoftBody2D to prevent massive joint correction forces on the first frame
 		var bone_28 = softbody.get_node_or_null("Bone-28")
@@ -38,6 +49,17 @@ func _ready() -> void:
 			for child in softbody.get_children():
 				if child is RigidBody2D:
 					child.global_position += alignment_offset
+
+# Returns true if the given node is (or belongs to) the killing block.
+func _is_killing_block(node: Node) -> bool:
+	return node != null and (node.name.begins_with("Killing Block") or node.is_in_group("killing_block"))
+
+# Called whenever ANY softbody bone (the slime's soft outer shell) physically
+# touches another body. If that body is the killing block, respawn just like
+# the core CharacterBody2D already does in bounce_response().
+func _on_softbody_bone_body_entered(body: Node) -> void:
+	if _is_killing_block(body):
+		respawn()
 
 func _physics_process(delta: float) -> void:
 	process_movement(delta)
@@ -126,7 +148,7 @@ func bounce_response(before_slide_velocity: Vector2, delta: float) -> void:
 			continue
 
 		var collider = collision.get_collider()
-		if collider and (collider.name.begins_with("Killing Block") or collider.is_in_group("killing_block")):
+		if _is_killing_block(collider):
 			respawn()
 			continue
 
@@ -139,4 +161,3 @@ func bounce_response(before_slide_velocity: Vector2, delta: float) -> void:
 
 		if abs(collision.get_normal().x) > 0.5:
 			bounce_cooldown = 0.2
-
