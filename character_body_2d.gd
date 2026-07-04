@@ -15,6 +15,8 @@ var friction: float
 var bounce_cooldown := 0.0
 var score := 0
 
+var coyote_cooldown := 0
+
 @onready var initial_position: Vector2 = global_position
 var is_respawning := false
 
@@ -66,8 +68,11 @@ func get_custom_gravity():
 	return get_gravity() * gravity_multiplier
 
 func process_jump(delta: float) -> void:
+	if coyote_cooldown > 0:
+		coyote_cooldown -= 1
 	if not is_on_floor():
 		velocity += get_custom_gravity() * delta
+		coyote_cooldown = 10
 
 	if Input.is_action_pressed("ui_up") and is_on_floor():
 		velocity.y = jump_velocity
