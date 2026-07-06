@@ -139,4 +139,3 @@ func bounce_response(before_slide_velocity: Vector2, delta: float) -> void:
 
 		if abs(collision.get_normal().x) > 0.5:
 			bounce_cooldown = 0.2
-
