@@ -7,9 +7,7 @@
 [ext_resource type="Script" uid="uid://vgscgo0mc8iv" path="res://hud.gd" id="3_epypp"]
 [ext_resource type="Texture2D" uid="uid://n2fexwi4ykvr" path="res://assets/Backgrouds/Back1.png" id="3_rj586"]
 [ext_resource type="PackedScene" uid="uid://j6rm5xs66rjc" path="res://Scenes/Spawner.tscn" id="4_rj586"]
-[ext_resource type="Texture2D" uid="uid://c2ts48capxm46" path="res://assets/death_block.png" id="8_km5ld"]
 [ext_resource type="PackedScene" uid="uid://5ym3wyqd7ms6" path="res://Scenes/killing_block.tscn" id="9_kill"]
-
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_epypp"]
 texture = ExtResource("2_0e48y")
@@ -29,6 +27,7 @@ texture = ExtResource("2_0e48y")
 1:2/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 2:2/0 = 0
 2:2/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
+2:2/0/physics_layer_0/polygon_0/one_way = true
 3:2/0 = 0
 3:2/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 4:2/0 = 0
@@ -111,9 +110,6 @@ physics_layer_0/collision_layer = 3
 physics_layer_0/collision_mask = 3
 sources/0 = SubResource("TileSetAtlasSource_epypp")
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_i2t4f"]
-size = Vector2(62, 62)
-
 [node name="Node2D" type="Node2D" unique_id=1837477100]
 
 [node name="Background" type="TextureRect" parent="." unique_id=1283996241]
@@ -169,4 +165,3 @@ position = Vector2(1236, 944)
 
 [node name="Killing Block" parent="." unique_id=1246345353 instance=ExtResource("9_kill")]
 position = Vector2(500, 1023)
-
