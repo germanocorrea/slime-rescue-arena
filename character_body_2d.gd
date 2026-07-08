@@ -1,33 +1,63 @@
 extends CharacterBody2D
 
+@export var default__max_speed = 600.0
+@export var default__jump_velocity = -900.0
+@export var default__bounce_strength = 0.8
+@export var default__acceleration = 1200.0
+@export var default__friction = 1450.0
+@export var default__coyote_time = 0.5
 
-const MAX_SPEED = 600.0
-const JUMP_VELOCITY = -900.0
-const BOUNCE_STRENGTH = 0.8
-const ACCELERATION = 1200.0
-const FRICTION = 1450.0
+var max_speed: float
+var jump_velocity: float
+var bounce_strength: float
+var acceleration: float
+var friction: float
+var coyote_time: float
 
 var bounce_cooldown := 0.0
 var score := 0
 
+var coyote_cooldown := 0.0
+var jump_time_left := 0.0
+
 @onready var initial_position: Vector2 = global_position
 var is_respawning := false
+
+func restar_properties() -> void:
+	max_speed = default__max_speed
+	jump_velocity = default__jump_velocity
+	bounce_strength = default__bounce_strength
+	acceleration = default__acceleration
+	friction = default__friction
+	coyote_time = default__coyote_time
 
 func _ready() -> void:
 	
 	add_to_group("player")
 	# Save initial position
 	initial_position = global_position
-	
+	restar_properties()
+	add_to_group("slime")
+
 	var softbody = get_parent().get_node_or_null("SoftBody2D")
 	if softbody:
 		# Enable CCD (Continuous Collision Detection) on all softbody rigid body bones.
-		# This guarantees that the fast-moving bones will not tunnel/clip through 
+		# This guarantees that the fast-moving bones will not tunnel/clip through
 		# colliders (like the ground tilemap) on high-speed fall impacts.
 		for child in softbody.get_children():
 			if child is RigidBody2D:
 				child.continuous_cd = RigidBody2D.CCD_MODE_CAST_SHAPE
-		
+				child.add_to_group("slime")
+
+				# Allow each softbody bone (the slime's outer "skin") to report
+				# physical contacts. Without this, only the core CharacterBody2D
+				# shape can ever detect the killing block, and touching the block
+				# with an arm/leg/edge of the soft body would be ignored.
+				child.contact_monitor = true
+				child.max_contacts_reported = max(child.max_contacts_reported, 4)
+				if not child.body_entered.is_connected(_on_softbody_bone_body_entered):
+					child.body_entered.connect(_on_softbody_bone_body_entered)
+
 		# Align the SoftBody2D to prevent massive joint correction forces on the first frame
 		var bone_28 = softbody.get_node_or_null("Bone-28")
 		var joint = get_node_or_null("Joint")
@@ -35,11 +65,22 @@ func _ready() -> void:
 			var joint_global_pos = joint.global_position
 			var bone_global_pos = bone_28.global_position
 			var alignment_offset = joint_global_pos - bone_global_pos
-			
+
 			softbody.global_position += alignment_offset
 			for child in softbody.get_children():
 				if child is RigidBody2D:
 					child.global_position += alignment_offset
+
+# Returns true if the given node is (or belongs to) the killing block.
+func _is_killing_block(node: Node) -> bool:
+	return node != null and (node.name.begins_with("Killing Block") or node.is_in_group("killing_block"))
+
+# Called whenever ANY softbody bone (the slime's soft outer shell) physically
+# touches another body. If that body is the killing block, respawn just like
+# the core CharacterBody2D already does in bounce_response().
+func _on_softbody_bone_body_entered(body: Node) -> void:
+	if _is_killing_block(body):
+		respawn()
 
 func _physics_process(delta: float) -> void:
 	process_movement(delta)
@@ -58,8 +99,26 @@ func process_jump(delta: float) -> void:
 	if not is_on_floor():
 		velocity += get_custom_gravity() * delta
 
+		if Input.is_action_pressed("ui_up") and jump_time_left > 0.0:
+			jump_time_left -= delta
+			# Compounding the total jump velocity over time!
+			velocity.y += jump_velocity * 3.0 * delta
+		else:
+			jump_time_left = 0.0
+
+		if coyote_cooldown > 0.0:
+			coyote_cooldown -= delta
+	else:
+		coyote_cooldown = coyote_time
+		jump_time_left = 0.0
+
 	if Input.is_action_pressed("ui_up") and is_on_floor():
-		velocity.y = JUMP_VELOCITY
+		velocity.y = jump_velocity * 0.4
+		jump_time_left = 0.2
+	elif Input.is_action_just_pressed("ui_up") and coyote_cooldown > 0.0:
+		velocity.y = jump_velocity * 0.4
+		coyote_cooldown = 0.0
+		jump_time_left = 0.2
 
 func add_score(amount: int) -> void:
 	score = max(0, score + amount)
@@ -71,46 +130,46 @@ func respawn() -> void:
 	if is_respawning:
 		return
 	is_respawning = true
-	
+
 	# Calculate the score after penalty (clamped at 0)
 	var new_score = max(0, score - 2)
-	
+
 	# Make the character and softbody disappear
 	var slime_root = get_parent()
 	var softbody = slime_root.get_node_or_null("SoftBody2D")
 	if softbody:
 		softbody.visible = false
 	visible = false
-	
+
 	# Stop updates on this node during transition
 	set_physics_process(false)
 	set_process(false)
-	
+
 	# Wait for 0.8 seconds (representing the disappeared/death duration)
 	await get_tree().create_timer(0.8).timeout
-	
+
 	# Re-instantiate the slime character
 	var character_scene = load("res://slime_character.tscn")
 	var new_character = character_scene.instantiate()
-	
+
 	# Pass the clamped score to the new character's body
 	var new_char_body = new_character.get_node("CharacterBody2D")
 	new_char_body.score = new_score
-	
+
 	# Add the new character to the level scene (the grandparent)
 	var level_root = slime_root.get_parent()
 	level_root.add_child(new_character)
-	
+
 	# Force the HUD to update with the new score
 	new_char_body.add_score(0)
-	
+
 	# Remove the old character completely from the game
 	slime_root.queue_free()
 
 func process_lateral_movement(delta: float) -> void:
 	var direction := Input.get_axis("ui_left", "ui_right")
 	if direction:
-		velocity.x = move_toward(velocity.x, direction * MAX_SPEED, ACCELERATION * delta)
+		velocity.x = move_toward(velocity.x, direction * max_speed, acceleration * delta)
 
 func process_movement(delta: float) -> void:
 	process_jump(delta)
@@ -128,16 +187,16 @@ func bounce_response(before_slide_velocity: Vector2, delta: float) -> void:
 			continue
 
 		var collider = collision.get_collider()
-		if collider and (collider.name.begins_with("Killing Block") or collider.is_in_group("killing_block")):
+		if _is_killing_block(collider):
 			respawn()
 			continue
 
-		velocity.x = move_toward(velocity.x, 0, FRICTION * delta)
+		velocity.x = move_toward(velocity.x, 0, friction * delta)
 
 		if bounce_breaks:
 			continue
 
-		velocity = before_slide_velocity.bounce(collision.get_normal()) * BOUNCE_STRENGTH
+		velocity = before_slide_velocity.bounce(collision.get_normal()) * bounce_strength
 
 		if abs(collision.get_normal().x) > 0.5:
 			bounce_cooldown = 0.2
