@@ -37,3 +37,7 @@ func slime_coletado():
 			#spawn_slime()
 			#break
 			
+
+
+func _on_camera_2d_ready() -> void:
+	pass # Replace with function body.

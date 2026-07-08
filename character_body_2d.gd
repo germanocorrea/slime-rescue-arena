@@ -14,6 +14,8 @@ var score := 0
 var is_respawning := false
 
 func _ready() -> void:
+	
+	add_to_group("player")
 	# Save initial position
 	initial_position = global_position
 	

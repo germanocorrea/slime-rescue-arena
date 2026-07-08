@@ -72,7 +72,7 @@ func _on_body_entered(body):
 		var character = body.get_parent().get_parent().get_node_or_null("CharacterBody2D")
 		if character and character.has_method("add_score"):
 			character.add_score(1)
-		#print("MiniSlime coletado!")
+		print("MiniSlime coletado!")
 		spawner.slime_coletado()
 		queue_free()
 
