@@ -5,17 +5,19 @@ extends CharacterBody2D
 @export var default__bounce_strength = 0.8
 @export var default__acceleration = 1200.0
 @export var default__friction = 1450.0
+@export var default__coyote_time = 0.5
 
 var max_speed: float
 var jump_velocity: float
 var bounce_strength: float
 var acceleration: float
 var friction: float
+var coyote_time: float
 
 var bounce_cooldown := 0.0
 var score := 0
 
-var coyote_cooldown := 0
+var coyote_cooldown := 0.0
 
 @onready var initial_position: Vector2 = global_position
 var is_respawning := false
@@ -26,6 +28,7 @@ func restar_properties() -> void:
 	bounce_strength = default__bounce_strength
 	acceleration = default__acceleration
 	friction = default__friction
+	coyote_time = default__coyote_time
 
 func _ready() -> void:
 	# Save initial position
@@ -68,14 +71,18 @@ func get_custom_gravity():
 	return get_gravity() * gravity_multiplier
 
 func process_jump(delta: float) -> void:
-	if coyote_cooldown > 0:
-		coyote_cooldown -= 1
 	if not is_on_floor():
 		velocity += get_custom_gravity() * delta
-		coyote_cooldown = 10
+		if coyote_cooldown > 0.0:
+			coyote_cooldown -= delta
+	else:
+		coyote_cooldown = coyote_time
 
 	if Input.is_action_pressed("ui_up") and is_on_floor():
 		velocity.y = jump_velocity
+	elif Input.is_action_just_pressed("ui_up") and coyote_cooldown > 0.0:
+		velocity.y = jump_velocity
+		coyote_cooldown = 0.0
 
 func add_score(amount: int) -> void:
 	score = max(0, score + amount)
