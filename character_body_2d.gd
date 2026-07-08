@@ -18,6 +18,7 @@ var bounce_cooldown := 0.0
 var score := 0
 
 var coyote_cooldown := 0.0
+var jump_time_left := 0.0
 
 @onready var initial_position: Vector2 = global_position
 var is_respawning := false
@@ -73,16 +74,27 @@ func get_custom_gravity():
 func process_jump(delta: float) -> void:
 	if not is_on_floor():
 		velocity += get_custom_gravity() * delta
+		
+		if Input.is_action_pressed("ui_up") and jump_time_left > 0.0:
+			jump_time_left -= delta
+			# Compounding the total jump velocity over time!
+			velocity.y += jump_velocity * 3.0 * delta
+		else:
+			jump_time_left = 0.0
+			
 		if coyote_cooldown > 0.0:
 			coyote_cooldown -= delta
 	else:
 		coyote_cooldown = coyote_time
+		jump_time_left = 0.0
 
 	if Input.is_action_pressed("ui_up") and is_on_floor():
-		velocity.y = jump_velocity
+		velocity.y = jump_velocity * 0.4
+		jump_time_left = 0.2
 	elif Input.is_action_just_pressed("ui_up") and coyote_cooldown > 0.0:
-		velocity.y = jump_velocity
+		velocity.y = jump_velocity * 0.4
 		coyote_cooldown = 0.0
+		jump_time_left = 0.2
 
 func add_score(amount: int) -> void:
 	score = max(0, score + amount)
