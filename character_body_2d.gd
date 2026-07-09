@@ -180,7 +180,7 @@ func bounce_response(before_slide_velocity: Vector2, delta: float) -> void:
 		var collision := get_slide_collision(i)
 		if velocity.y <= -400:
 			collisionSound.play()
-		print(velocity)
+		# print(velocity)
 		if not collision:
 			continue
 
@@ -200,4 +200,4 @@ func bounce_response(before_slide_velocity: Vector2, delta: float) -> void:
 			bounce_cooldown = 0.2
 			if abs(velocity.x) >= 400 or velocity.y >= 300:
 				collisionSound.play()
-			print(velocity)
+			# print(velocity)
