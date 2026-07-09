@@ -5,7 +5,7 @@ extends CharacterBody2D
 @export var default__bounce_strength = 0.8
 @export var default__acceleration = 1200.0
 @export var default__friction = 1450.0
-@export var default__coyote_time = 0.5
+@export var default__coyote_time = 0.25
 
 var max_speed: float
 var jump_velocity: float
@@ -112,10 +112,7 @@ func process_jump(delta: float) -> void:
 		coyote_cooldown = coyote_time
 		jump_time_left = 0.0
 
-	if Input.is_action_pressed("ui_up") and is_on_floor():
-		velocity.y = jump_velocity * 0.4
-		jump_time_left = 0.2
-	elif Input.is_action_just_pressed("ui_up") and coyote_cooldown > 0.0:
+	if Input.is_action_pressed("ui_up") and (is_on_floor() or coyote_cooldown > 0.0):
 		velocity.y = jump_velocity * 0.4
 		coyote_cooldown = 0.0
 		jump_time_left = 0.2
