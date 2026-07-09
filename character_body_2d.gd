@@ -36,50 +36,26 @@ func _process(_delta: float) -> void:
 
 func _ready() -> void:
 	add_to_group("player")
-	# Save initial position
 	initial_position = global_position
 	restar_properties()
 	add_to_group("slime")
 
 	var softbody = get_parent().get_node_or_null("SoftBody2D")
 	if softbody:
-		# Enable CCD (Continuous Collision Detection) on all softbody rigid body bones.
-		# This guarantees that the fast-moving bones will not tunnel/clip through
-		# colliders (like the ground tilemap) on high-speed fall impacts.
 		for child in softbody.get_children():
 			if child is RigidBody2D:
 				child.continuous_cd = RigidBody2D.CCD_MODE_CAST_SHAPE
 				child.add_to_group("slime")
 
-				# Allow each softbody bone (the slime's outer "skin") to report
-				# physical contacts. Without this, only the core CharacterBody2D
-				# shape can ever detect the killing block, and touching the block
-				# with an arm/leg/edge of the soft body would be ignored.
 				child.contact_monitor = true
 				child.max_contacts_reported = max(child.max_contacts_reported, 4)
 				if not child.body_entered.is_connected(_on_softbody_bone_body_entered):
 					child.body_entered.connect(_on_softbody_bone_body_entered)
 
-		# Align the SoftBody2D to prevent massive joint correction forces on the first frame
-		var bone_28 = softbody.get_node_or_null("Bone-28")
-		var joint = get_node_or_null("Joint")
-		if bone_28 and joint:
-			var joint_global_pos = joint.global_position
-			var bone_global_pos = bone_28.global_position
-			var alignment_offset = joint_global_pos - bone_global_pos
 
-			softbody.global_position += alignment_offset
-			for child in softbody.get_children():
-				if child is RigidBody2D:
-					child.global_position += alignment_offset
-
-# Returns true if the given node is (or belongs to) the killing block.
 func _is_killing_block(node: Node) -> bool:
 	return node != null and (node.name.begins_with("Killing Block") or node.is_in_group("killing_block"))
 
-# Called whenever ANY softbody bone (the slime's soft outer shell) physically
-# touches another body. If that body is the killing block, respawn just like
-# the core CharacterBody2D already does in bounce_response().
 func _on_softbody_bone_body_entered(body: Node) -> void:
 	if _is_killing_block(body):
 		respawn()
