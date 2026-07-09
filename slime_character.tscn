@@ -7,9 +7,11 @@
 [ext_resource type="Script" uid="uid://kol6k5y6rb8a" path="res://addons/softbody2d/softbody2d.gd" id="3_kpqkq"]
 [ext_resource type="AudioStream" uid="uid://b2aapq4hfnp2q" path="res://SFX/coin_SFX.wav" id="4_f8jh0"]
 [ext_resource type="PhysicsMaterial" uid="uid://deqagbq7eod2b" path="res://samples/softbody2d/softbody2d_phys_bouncy.tres" id="4_fbqws"]
+[ext_resource type="Texture2D" uid="uid://bny1neer0vmny" path="res://assets/Slime_eyes.png" id="5_4olpd"]
 [ext_resource type="AudioStream" uid="uid://dah1wx418nh0m" path="res://SFX/sonsdeslime/som1.ogg" id="5_bfhsh"]
 [ext_resource type="Shader" uid="uid://bxo2n0rrsyvuj" path="res://pixelated.gdshader" id="5_o0oqh"]
 [ext_resource type="AudioStream" uid="uid://b2naqwoecaqq3" path="res://SFX/sonsdeslime/som2.ogg" id="6_7jujb"]
+[ext_resource type="Script" uid="uid://bddcl2vw7araq" path="res://eyes_sprite.gd" id="6_kpqkq"]
 [ext_resource type="AudioStream" uid="uid://8jr3kyxigjx5" path="res://SFX/sonsdeslime/som3.ogg" id="7_43mmi"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_0hol4"]
@@ -450,6 +452,9 @@ radius = 4.9756527
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_kdubu"]
 shader = ExtResource("5_o0oqh")
 shader_parameter/pixel_size = 4.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_0hol4"]
+radius = 19.026299
 
 [node name="SlimeCharacter" type="Node2D" unique_id=355373770]
 metadata/_edit_group_ = true
@@ -1177,7 +1182,7 @@ metadata/_local_pose_override_enabled_ = true
 [node name="Bone-47" type="Bone2D" parent="SoftBody2D/Skeleton2D" unique_id=1177964542]
 position = Vector2(202.34277, 63.06645)
 rotation = 2.3361275
-scale = Vector2(0.99997765, 0.9999768)
+scale = Vector2(0.99997133, 0.9999726)
 rest = Transform2D(-0.692775, 0.7211538, -0.7211538, -0.692775, 202.34279, 63.066452)
 auto_calculate_length_and_angle = false
 length = 30.0
@@ -4781,7 +4786,6 @@ node_b = NodePath("../../Bone-50")
 softness = 9.5
 
 [node name="BackBufferCopy" type="BackBufferCopy" parent="." unique_id=1226957783]
-visible = false
 position = Vector2(576, 324)
 scale = Vector2(5.77, 3.25)
 copy_mode = 2
@@ -4792,3 +4796,22 @@ offset_left = -482.32233
 offset_top = -248.3077
 offset_right = 669.6777
 offset_bottom = 399.69232
+
+[node name="CharacterBody2D" type="CharacterBody2D" parent="." unique_id=395062825]
+position = Vector2(-6.1035156e-05, 0.9999695)
+collision_layer = 2
+collision_mask = 2
+script = ExtResource("1_q00su")
+
+[node name="EyesSprite" type="Sprite2D" parent="CharacterBody2D" unique_id=1374258808]
+position = Vector2(6.1035156e-05, 3.0517578e-05)
+scale = Vector2(0.45, 0.472)
+texture = ExtResource("5_4olpd")
+script = ExtResource("6_kpqkq")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="CharacterBody2D" unique_id=1313610455]
+shape = SubResource("CircleShape2D_0hol4")
+
+[node name="Joint" type="PinJoint2D" parent="CharacterBody2D" unique_id=2064782250]
+node_a = NodePath("..")
+node_b = NodePath("../../SoftBody2D/Bone-28")

@@ -357,7 +357,7 @@ sources/0 = SubResource("TileSetAtlasSource_8cye3")
 [node name="Parallax_Background" parent="." unique_id=1021476687 instance=ExtResource("1_8cye3")]
 
 [node name="SlimeCharacter" parent="." unique_id=647829573 instance=ExtResource("1_wtcfe")]
-position = Vector2(620, 345)
+position = Vector2(593, 430)
 
 [node name="HUD" type="CanvasLayer" parent="." unique_id=477182474 groups=["hud"]]
 visible = false

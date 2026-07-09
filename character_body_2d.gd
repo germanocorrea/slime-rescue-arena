@@ -37,7 +37,7 @@ func restar_properties() -> void:
 	coyote_time = default__coyote_time
 
 func _process(_delta: float) -> void:
-	get_tree().call_group("Camera2D", "updatePlayerPosition", global_position)
+	get_tree().call_group("FollowPlayer", "updatePlayerPosition", global_position)
 
 func _ready() -> void:
 	add_to_group("player")
@@ -74,12 +74,16 @@ func _physics_process(delta: float) -> void:
 
 func prevent_slime_stretching() -> void:
 	var softbody = get_parent().get_node_or_null("SoftBody2D")
-	if softbody:
-		for child in softbody.get_children():
-			if child is RigidBody2D:
-				if child.global_position.distance_to(global_position) > 120.0:
-					child.global_transform.origin = global_position
-					child.linear_velocity = Vector2.ZERO
+	if not softbody:
+		return
+
+	for child in softbody.get_children():
+		if child is RigidBody2D:
+			var distance_to_origin = child.global_position.distance_to(global_position)
+			if distance_to_origin > 120.0:
+				child.global_transform.origin.x -= 0.3 * distance_to_origin
+				child.global_transform.origin.y -= 0.3 * distance_to_origin
+				child.linear_velocity = Vector2.ZERO
 
 func get_custom_gravity():
 	var gravity_multiplier := 1.0
@@ -160,6 +164,7 @@ func process_lateral_movement(delta: float) -> void:
 	var direction := Input.get_axis("ui_left", "ui_right")
 	if direction:
 		velocity.x = move_toward(velocity.x, direction * max_speed, acceleration * delta)
+		get_tree().call_group("SlimeEyes", "updatePlayerDirection", direction)
 
 func process_movement(delta: float) -> void:
 	process_jump(delta)
