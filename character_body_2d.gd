@@ -23,6 +23,11 @@ var jump_time_left := 0.0
 @onready var initial_position: Vector2 = global_position
 var is_respawning := false
 
+@onready var jumpSound := $jumpSound
+@onready var deathSound := $deathSound
+@onready var collectSound := $collectSound
+@onready var collisionSound := $collisionSound
+
 func restar_properties() -> void:
 	max_speed = default__max_speed
 	jump_velocity = default__jump_velocity
@@ -57,8 +62,8 @@ func _is_killing_block(node: Node) -> bool:
 	return node != null and (node.name.begins_with("Killing Block") or node.is_in_group("killing_block"))
 
 func _on_softbody_bone_body_entered(body: Node) -> void:
-	if _is_killing_block(body):
-		respawn()
+	if _is_killing_block(body) and not is_respawning:
+		death()
 
 func _physics_process(delta: float) -> void:
 	process_movement(delta)
@@ -108,17 +113,16 @@ func process_jump(delta: float) -> void:
 		velocity.y = jump_velocity * 0.4
 		coyote_cooldown = 0.0
 		jump_time_left = 0.2
+		jumpSound.play()
 
 func add_score(amount: int) -> void:
 	score = max(0, score + amount)
 	get_tree().call_group("hud", "update_score", score)
 	if score >= 500:
 		get_tree().call_group("game_manager", "end_game", score)
+	collectSound.play()
 
 func respawn() -> void:
-	if is_respawning:
-		return
-	is_respawning = true
 
 	# Calculate the score after penalty (clamped at 0)
 	var new_score = max(0, score - 2)
@@ -168,18 +172,26 @@ func process_movement(delta: float) -> void:
 		bounce_cooldown -= delta
 		return
 	process_lateral_movement(delta)
+	
+func death() -> void:
+	is_respawning = true
+	deathSound.play()
+	respawn()
 
 func bounce_response(before_slide_velocity: Vector2, delta: float) -> void:
 	var bounce_breaks := Input.is_action_pressed("ui_down")
 
 	for i in get_slide_collision_count():
 		var collision := get_slide_collision(i)
+		if velocity.y <= -400:
+			collisionSound.play()
+		# print(velocity)
 		if not collision:
 			continue
 
 		var collider = collision.get_collider()
-		if _is_killing_block(collider):
-			respawn()
+		if _is_killing_block(collider) and not is_respawning:
+			death()
 			continue
 
 		velocity.x = move_toward(velocity.x, 0, friction * delta)
@@ -191,3 +203,6 @@ func bounce_response(before_slide_velocity: Vector2, delta: float) -> void:
 
 		if abs(collision.get_normal().x) > 0.5:
 			bounce_cooldown = 0.2
+			if abs(velocity.x) >= 400 or velocity.y >= 300:
+				collisionSound.play()
+			# print(velocity)
