@@ -1,0 +1,8 @@
+[gd_scene format=3 uid="uid://btffcqg3ixmlj"]
+
+[ext_resource type="Script" uid="uid://bvukcwp6d4g6d" path="res://Scenes/area_2d_camera.gd" id="1_xmpv3"]
+
+[node name="Area2D" type="Area2D" unique_id=2023635928]
+script = ExtResource("1_xmpv3")
+
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]

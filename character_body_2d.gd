@@ -32,6 +32,8 @@ func restar_properties() -> void:
 	coyote_time = default__coyote_time
 
 func _ready() -> void:
+	
+	add_to_group("player")
 	# Save initial position
 	initial_position = global_position
 	restar_properties()

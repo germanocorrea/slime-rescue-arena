@@ -6,8 +6,13 @@ func _ready() -> void:
 	max_contacts_reported = 4
 	body_entered.connect(_on_body_entered)
 
-func _on_body_entered(body: Node) -> void:
-	# Only trigger respawn if the colliding body is the main CharacterBody2D itself, not the softbody bones
-	var character = body as CharacterBody2D
-	if character and character.has_method("respawn"):
-		character.respawn()
+func _on_body_entered(body):
+	var atual = body
+
+	while atual:
+		if atual is CharacterBody2D:
+			if atual.has_method("respawn"):
+				atual.respawn()
+			return
+
+		atual = atual.get_parent()
