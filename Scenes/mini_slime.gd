@@ -6,36 +6,47 @@ var posicao_inicial: Vector2
 var tempo := 0.0
 var offset := randf() * TAU
 
+var pontos := 1
+
+var coletado := false
+
 @onready var anim = $AnimatedSprite2D
 
 var paletas = [
 	{
-	"claro": Color("#639bff"),
-	"escuro": Color("#5b6ee1")
+		"claro": Color("#639bff"),
+		"escuro": Color("#5b6ee1"),
+		"pontos": 1 
 	},
 	{
 		"claro": Color("#fa66fa"),
-		"escuro": Color("#cf57cf")
+		"escuro": Color("#cf57cf"),
+		"pontos": 8 
 	},
 	{
 		"claro": Color("#8121c7"),
-		"escuro": Color("#6707ac")
+		"escuro": Color("#6707ac"),
+		"pontos": 5 
 	},
 	{
 		"claro": Color("#b23434"),
-		"escuro": Color("#932c2c")
+		"escuro": Color("#932c2c"),
+		"pontos": 4  
 	},
 	{
 		"claro": Color("#99e550"),
-		"escuro": Color("#70c81e")
+		"escuro": Color("#70c81e"),
+		"pontos": 2  
 	},
 	{
 		"claro": Color("#fbf236"),
-		"escuro": Color("#deca31")
+		"escuro": Color("#deca31"),
+		"pontos": 3  
 	},
 	{
 		"claro": Color("#dddddd"),
-		"escuro": Color("#afafaf")
+		"escuro": Color("#afafaf"),
+		"pontos": 1
 	}
 ]
 
@@ -55,12 +66,14 @@ func _ready():
 	# Cria uma cópia exclusiva do material para este slime
 	$AnimatedSprite2D.material = $AnimatedSprite2D.material.duplicate()
 
-	var spriteMaterial = $AnimatedSprite2D.material
+	var material = $AnimatedSprite2D.material
 
 	var paleta = paletas.pick_random()
 
-	spriteMaterial.set_shader_parameter("new_color_1", paleta["claro"])
-	spriteMaterial.set_shader_parameter("new_color_2", paleta["escuro"])
+	material.set_shader_parameter("new_color_1", paleta["claro"])
+	material.set_shader_parameter("new_color_2", paleta["escuro"])
+
+	pontos = paleta["pontos"]
 
 func _process(delta):
 	tempo += delta
@@ -68,11 +81,14 @@ func _process(delta):
 	global_position.y = posicao_inicial.y + cos(tempo * 2.0 + offset) * 10.0
 
 func _on_body_entered(body):
+	if coletado:
+		return
 	if body.name.begins_with("Bone"):
+		coletado = true
 		var character = body.get_parent().get_parent().get_node_or_null("CharacterBody2D")
 		if character and character.has_method("add_score"):
-			character.add_score(1)
-		print("MiniSlime coletado!")
+			character.add_score(pontos)
+		print("MiniSlime coletado! +", pontos, " pontos")
 		spawner.slime_coletado()
 		queue_free()
 
