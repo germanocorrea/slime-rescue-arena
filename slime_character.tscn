@@ -459,38 +459,6 @@ radius = 19.026299
 [node name="SlimeCharacter" type="Node2D" unique_id=355373770]
 metadata/_edit_group_ = true
 
-[node name="CharacterBody2D" type="CharacterBody2D" parent="." unique_id=395062825]
-position = Vector2(-6.1035156e-05, 0.9999695)
-collision_layer = 2
-collision_mask = 2
-script = ExtResource("1_q00su")
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="CharacterBody2D" unique_id=1313610455]
-shape = SubResource("CircleShape2D_0hol4")
-
-[node name="Joint" type="PinJoint2D" parent="CharacterBody2D" unique_id=2064782250]
-node_a = NodePath("..")
-node_b = NodePath("../../SoftBody2D/Bone-28")
-
-[node name="jumpSound" type="AudioStreamPlayer" parent="CharacterBody2D" unique_id=465705631]
-stream = ExtResource("2_8hdq1")
-volume_db = -10.0
-bus = &"SFX"
-
-[node name="deathSound" type="AudioStreamPlayer" parent="CharacterBody2D" unique_id=314959902]
-stream = ExtResource("3_hrkeb")
-volume_db = -10.0
-bus = &"SFX"
-
-[node name="collectSound" type="AudioStreamPlayer" parent="CharacterBody2D" unique_id=844491938]
-stream = ExtResource("4_f8jh0")
-volume_db = -10.0
-bus = &"SFX"
-
-[node name="collisionSound" type="AudioStreamPlayer" parent="CharacterBody2D" unique_id=239726682]
-stream = SubResource("AudioStreamRandomizer_hhntk")
-bus = &"SFX"
-
 [node name="SoftBody2D" type="Polygon2D" parent="." unique_id=1077918077]
 position = Vector2(-41, -43)
 scale = Vector2(0.35540375, 0.37474954)
@@ -4815,3 +4783,23 @@ shape = SubResource("CircleShape2D_0hol4")
 [node name="Joint" type="PinJoint2D" parent="CharacterBody2D" unique_id=2064782250]
 node_a = NodePath("..")
 node_b = NodePath("../../SoftBody2D/Bone-28")
+
+[node name="jumpSound" type="AudioStreamPlayer" parent="CharacterBody2D" unique_id=465705631]
+stream = ExtResource("2_8hdq1")
+volume_db = -10.0
+bus = &"SFX"
+
+[node name="deathSound" type="AudioStreamPlayer" parent="CharacterBody2D" unique_id=314959902]
+stream = ExtResource("3_hrkeb")
+volume_db = -10.0
+bus = &"SFX"
+
+[node name="collectSound" type="AudioStreamPlayer" parent="CharacterBody2D" unique_id=844491938]
+stream = ExtResource("4_f8jh0")
+volume_db = -10.0
+bus = &"SFX"
+
+[node name="collisionSound" type="AudioStreamPlayer" parent="CharacterBody2D" unique_id=239726682]
+stream = SubResource("AudioStreamRandomizer_hhntk")
+bus = &"SFX"
+
