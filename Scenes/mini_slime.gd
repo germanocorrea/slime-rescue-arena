@@ -55,12 +55,12 @@ func _ready():
 	# Cria uma cópia exclusiva do material para este slime
 	$AnimatedSprite2D.material = $AnimatedSprite2D.material.duplicate()
 
-	var material = $AnimatedSprite2D.material
+	var spriteMaterial = $AnimatedSprite2D.material
 
 	var paleta = paletas.pick_random()
 
-	material.set_shader_parameter("new_color_1", paleta["claro"])
-	material.set_shader_parameter("new_color_2", paleta["escuro"])
+	spriteMaterial.set_shader_parameter("new_color_1", paleta["claro"])
+	spriteMaterial.set_shader_parameter("new_color_2", paleta["escuro"])
 
 func _process(delta):
 	tempo += delta

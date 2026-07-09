@@ -46,7 +46,7 @@ func update_score(new_score: int) -> void:
 	score_label.text = "Score: " + str(new_score)
 
 func update_timer_display() -> void:
-	var minutes := int(time_left) / 60
+	var minutes := int(time_left) / 60.0
 	var seconds := int(time_left) % 60
 	time_label.text = "Time: %02d:%02d" % [minutes, seconds]
 
