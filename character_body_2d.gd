@@ -65,6 +65,16 @@ func _physics_process(delta: float) -> void:
 	var before_slide_velocity := velocity
 	move_and_slide()
 	bounce_response(before_slide_velocity, delta)
+	prevent_slime_stretching()
+
+func prevent_slime_stretching() -> void:
+	var softbody = get_parent().get_node_or_null("SoftBody2D")
+	if softbody:
+		for child in softbody.get_children():
+			if child is RigidBody2D:
+				if child.global_position.distance_to(global_position) > 120.0:
+					child.global_transform.origin = global_position
+					child.linear_velocity = Vector2.ZERO
 
 func get_custom_gravity():
 	var gravity_multiplier := 1.0
