@@ -69,12 +69,16 @@ func _physics_process(delta: float) -> void:
 
 func prevent_slime_stretching() -> void:
 	var softbody = get_parent().get_node_or_null("SoftBody2D")
-	if softbody:
-		for child in softbody.get_children():
-			if child is RigidBody2D:
-				if child.global_position.distance_to(global_position) > 120.0:
-					child.global_transform.origin = global_position
-					child.linear_velocity = Vector2.ZERO
+	if not softbody:
+		return
+
+	for child in softbody.get_children():
+		if child is RigidBody2D:
+			var distance_to_origin = child.global_position.distance_to(global_position)
+			if distance_to_origin > 120.0:
+				child.global_transform.origin.x -= 0.3 * distance_to_origin
+				child.global_transform.origin.y -= 0.3 * distance_to_origin
+				child.linear_velocity = Vector2.ZERO
 
 func get_custom_gravity():
 	var gravity_multiplier := 1.0
