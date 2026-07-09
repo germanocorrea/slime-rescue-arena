@@ -31,8 +31,10 @@ func restar_properties() -> void:
 	friction = default__friction
 	coyote_time = default__coyote_time
 
+func _process(delta: float) -> void:
+	get_tree().call_group("Camera2D", "updatePlayerPosition", global_position)
+
 func _ready() -> void:
-	
 	add_to_group("player")
 	# Save initial position
 	initial_position = global_position

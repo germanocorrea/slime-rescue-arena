@@ -1,6 +1,12 @@
 extends Camera2D
 
-@onready var player = $"../SlimeCharacter/CharacterBody2D"
+@onready var globalPlayerPosition = global_position
+
+func _ready() -> void:
+	add_to_group("Camera2D")
 
 func _process(delta):
-	global_position = global_position.lerp(player.global_position, 5.0 * delta)
+	global_position = global_position.lerp(globalPlayerPosition, 5.0 * delta)
+
+func updatePlayerPosition(currentPlayerPosition: Vector2):
+	position = currentPlayerPosition
