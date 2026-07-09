@@ -32,7 +32,7 @@ func restar_properties() -> void:
 	coyote_time = default__coyote_time
 
 func _process(_delta: float) -> void:
-	get_tree().call_group("Camera2D", "updatePlayerPosition", global_position)
+	get_tree().call_group("FollowPlayer", "updatePlayerPosition", global_position)
 
 func _ready() -> void:
 	add_to_group("player")
@@ -156,6 +156,7 @@ func process_lateral_movement(delta: float) -> void:
 	var direction := Input.get_axis("ui_left", "ui_right")
 	if direction:
 		velocity.x = move_toward(velocity.x, direction * max_speed, acceleration * delta)
+		get_tree().call_group("SlimeEyes", "updatePlayerDirection", direction)
 
 func process_movement(delta: float) -> void:
 	process_jump(delta)
