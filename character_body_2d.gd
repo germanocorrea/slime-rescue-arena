@@ -150,6 +150,7 @@ func respawn() -> void:
 	# Re-instantiate the slime character
 	var character_scene = load("res://slime_character.tscn")
 	var new_character = character_scene.instantiate()
+	new_character.global_position = initial_position
 
 	# Pass the clamped score to the new character's body
 	var new_char_body = new_character.get_node("CharacterBody2D")
