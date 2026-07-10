@@ -360,7 +360,6 @@ sources/0 = SubResource("TileSetAtlasSource_8cye3")
 position = Vector2(593, 430)
 
 [node name="HUD" type="CanvasLayer" parent="." unique_id=477182474 groups=["hud"]]
-visible = false
 script = ExtResource("3_epypp")
 
 [node name="ScoreLabel" type="Label" parent="HUD" unique_id=744243797 groups=["hud"]]
