@@ -73,6 +73,7 @@ func _physics_process(delta: float) -> void:
 	prevent_slime_stretching()
 
 func prevent_slime_stretching() -> void:
+	return
 	var softbody = get_parent().get_node_or_null("SoftBody2D")
 	if not softbody:
 		return
