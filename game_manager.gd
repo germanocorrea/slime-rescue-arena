@@ -6,6 +6,7 @@ var start_screen: CanvasLayer
 var end_screen: CanvasLayer
 var final_score_label: Label
 var current_level_instance: Node = null
+var current_scene_to_load: PackedScene = null
 
 func _ready() -> void:
 	# Add this node to the "game_manager" group
@@ -304,8 +305,60 @@ func setup_end_screen() -> void:
 		tween.tween_property(btn_reiniciar, "scale", Vector2(1.0, 1.0), 0.1).set_trans(Tween.TRANS_SINE)
 	)
 	
-	btn_reiniciar.pressed.connect(start_game)
+	btn_reiniciar.pressed.connect(restart_game)
 	btn_center.add_child(btn_reiniciar)
+
+	var btn_menu_center = CenterContainer.new()
+	vbox.add_child(btn_menu_center)
+	
+	# Main Menu Button
+	var btn_menu = Button.new()
+	btn_menu.text = "Menu Principal"
+	btn_menu.custom_minimum_size = Vector2(250, 80)
+	btn_menu.add_theme_font_size_override("font_size", 36)
+	
+	var style_menu_normal = StyleBoxFlat.new()
+	style_menu_normal.bg_color = Color(0.2, 0.4, 0.7) # Nice blue
+	style_menu_normal.corner_radius_top_left = 12
+	style_menu_normal.corner_radius_top_right = 12
+	style_menu_normal.corner_radius_bottom_left = 12
+	style_menu_normal.corner_radius_bottom_right = 12
+	style_menu_normal.shadow_size = 8
+	style_menu_normal.shadow_color = Color(0.2, 0.4, 0.7, 0.3)
+	
+	var style_menu_hover = StyleBoxFlat.new()
+	style_menu_hover.bg_color = Color(0.3, 0.5, 0.8) # Brighter blue
+	style_menu_hover.corner_radius_top_left = 12
+	style_menu_hover.corner_radius_top_right = 12
+	style_menu_hover.corner_radius_bottom_left = 12
+	style_menu_hover.corner_radius_bottom_right = 12
+	style_menu_hover.shadow_size = 12
+	style_menu_hover.shadow_color = Color(0.3, 0.5, 0.8, 0.5)
+	
+	var style_menu_pressed = StyleBoxFlat.new()
+	style_menu_pressed.bg_color = Color(0.15, 0.3, 0.55) # Darker blue
+	style_menu_pressed.corner_radius_top_left = 12
+	style_menu_pressed.corner_radius_top_right = 12
+	style_menu_pressed.corner_radius_bottom_left = 12
+	style_menu_pressed.corner_radius_bottom_right = 12
+	
+	btn_menu.add_theme_stylebox_override("normal", style_menu_normal)
+	btn_menu.add_theme_stylebox_override("hover", style_menu_hover)
+	btn_menu.add_theme_stylebox_override("pressed", style_menu_pressed)
+	btn_menu.add_theme_stylebox_override("focus", StyleBoxEmpty.new())
+	
+	# Micro-animations
+	btn_menu.mouse_entered.connect(func():
+		var tween = create_tween()
+		tween.tween_property(btn_menu, "scale", Vector2(1.05, 1.05), 0.1).set_trans(Tween.TRANS_SINE)
+	)
+	btn_menu.mouse_exited.connect(func():
+		var tween = create_tween()
+		tween.tween_property(btn_menu, "scale", Vector2(1.0, 1.0), 0.1).set_trans(Tween.TRANS_SINE)
+	)
+	
+	btn_menu.pressed.connect(return_to_main_menu)
+	btn_menu_center.add_child(btn_menu)
 
 	var btn_exit_center = CenterContainer.new()
 	vbox.add_child(btn_exit_center)
@@ -365,26 +418,26 @@ func show_start_screen() -> void:
 	start_screen.visible = true
 	end_screen.visible = false
 
+func return_to_main_menu() -> void:
+	if current_level_instance:
+		current_level_instance.queue_free()
+		current_level_instance = null
+	show_start_screen()
+
 func show_end_screen(score: int) -> void:
 	final_score_label.text = "Final Score: " + str(score)
 	start_screen.visible = false
 	end_screen.visible = true
 
 func start_game() -> void:
-	# Hide screens
-	start_screen.visible = false
-	end_screen.visible = false
-	
-	# Clean up existing level if any
-	if current_level_instance:
-		current_level_instance.queue_free()
-		current_level_instance = null
-		
-	# Instance and add new level
-	current_level_instance = LEVEL_SCENE.instantiate()
-	add_child(current_level_instance)
+	current_scene_to_load = LEVEL_SCENE
+	restart_game()
 
 func start_playground() -> void:
+	current_scene_to_load = preload("res://levelInitial.tscn")
+	restart_game()
+
+func restart_game() -> void:
 	# Hide screens
 	start_screen.visible = false
 	end_screen.visible = false
@@ -395,9 +448,9 @@ func start_playground() -> void:
 		current_level_instance = null
 		
 	# Instance and add new level
-	var playground_scene = preload("res://levelInitial.tscn")
-	current_level_instance = playground_scene.instantiate()
-	add_child(current_level_instance)
+	if current_scene_to_load:
+		current_level_instance = current_scene_to_load.instantiate()
+		add_child(current_level_instance)
 
 func end_game(final_score: int) -> void:
 	show_end_screen(final_score)
