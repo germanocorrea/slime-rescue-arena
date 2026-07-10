@@ -112,6 +112,111 @@ func setup_start_screen() -> void:
 	btn_iniciar.pressed.connect(start_game)
 	btn_center.add_child(btn_iniciar)
 
+	# Playground Button Container
+	var btn_pg_center = CenterContainer.new()
+	vbox.add_child(btn_pg_center)
+	
+	var btn_playground = Button.new()
+	btn_playground.text = "Playground"
+	btn_playground.custom_minimum_size = Vector2(250, 80)
+	btn_playground.add_theme_font_size_override("font_size", 36)
+	
+	var style_pg_normal = StyleBoxFlat.new()
+	style_pg_normal.bg_color = Color(0.65, 0.35, 0.8) # Premium purple
+	style_pg_normal.corner_radius_top_left = 12
+	style_pg_normal.corner_radius_top_right = 12
+	style_pg_normal.corner_radius_bottom_left = 12
+	style_pg_normal.corner_radius_bottom_right = 12
+	style_pg_normal.shadow_size = 8
+	style_pg_normal.shadow_color = Color(0.65, 0.35, 0.8, 0.3)
+	
+	var style_pg_hover = StyleBoxFlat.new()
+	style_pg_hover.bg_color = Color(0.75, 0.45, 0.9) # Brighter purple
+	style_pg_hover.corner_radius_top_left = 12
+	style_pg_hover.corner_radius_top_right = 12
+	style_pg_hover.corner_radius_bottom_left = 12
+	style_pg_hover.corner_radius_bottom_right = 12
+	style_pg_hover.shadow_size = 12
+	style_pg_hover.shadow_color = Color(0.75, 0.45, 0.9, 0.5)
+	
+	var style_pg_pressed = StyleBoxFlat.new()
+	style_pg_pressed.bg_color = Color(0.5, 0.25, 0.65) # Darker purple
+	style_pg_pressed.corner_radius_top_left = 12
+	style_pg_pressed.corner_radius_top_right = 12
+	style_pg_pressed.corner_radius_bottom_left = 12
+	style_pg_pressed.corner_radius_bottom_right = 12
+	
+	btn_playground.add_theme_stylebox_override("normal", style_pg_normal)
+	btn_playground.add_theme_stylebox_override("hover", style_pg_hover)
+	btn_playground.add_theme_stylebox_override("pressed", style_pg_pressed)
+	btn_playground.add_theme_stylebox_override("focus", StyleBoxEmpty.new())
+	
+	btn_playground.mouse_entered.connect(func():
+		var tween = create_tween()
+		tween.tween_property(btn_playground, "scale", Vector2(1.05, 1.05), 0.1).set_trans(Tween.TRANS_SINE)
+	)
+	btn_playground.mouse_exited.connect(func():
+		var tween = create_tween()
+		tween.tween_property(btn_playground, "scale", Vector2(1.0, 1.0), 0.1).set_trans(Tween.TRANS_SINE)
+	)
+	
+	btn_playground.pressed.connect(start_playground)
+	btn_pg_center.add_child(btn_playground)
+
+	# Exit Button Container for Start Screen
+	var btn_start_exit_center = CenterContainer.new()
+	vbox.add_child(btn_start_exit_center)
+	
+	var btn_start_exit = Button.new()
+	btn_start_exit.text = "Sair"
+	btn_start_exit.custom_minimum_size = Vector2(250, 80)
+	btn_start_exit.add_theme_font_size_override("font_size", 36)
+	
+	var style_start_exit_normal = StyleBoxFlat.new()
+	style_start_exit_normal.bg_color = Color(0.2, 0.2, 0.25) # Premium dark grey/blue
+	style_start_exit_normal.corner_radius_top_left = 12
+	style_start_exit_normal.corner_radius_top_right = 12
+	style_start_exit_normal.corner_radius_bottom_left = 12
+	style_start_exit_normal.corner_radius_bottom_right = 12
+	style_start_exit_normal.shadow_size = 8
+	style_start_exit_normal.shadow_color = Color(0.2, 0.2, 0.25, 0.3)
+	
+	var style_start_exit_hover = StyleBoxFlat.new()
+	style_start_exit_hover.bg_color = Color(0.3, 0.3, 0.38) # Lighter grey/blue
+	style_start_exit_hover.corner_radius_top_left = 12
+	style_start_exit_hover.corner_radius_top_right = 12
+	style_start_exit_hover.corner_radius_bottom_left = 12
+	style_start_exit_hover.corner_radius_bottom_right = 12
+	style_start_exit_hover.shadow_size = 12
+	style_start_exit_hover.shadow_color = Color(0.3, 0.3, 0.38, 0.5)
+	
+	var style_start_exit_pressed = StyleBoxFlat.new()
+	style_start_exit_pressed.bg_color = Color(0.12, 0.12, 0.15) # Darker grey/blue
+	style_start_exit_pressed.corner_radius_top_left = 12
+	style_start_exit_pressed.corner_radius_top_right = 12
+	style_start_exit_pressed.corner_radius_bottom_left = 12
+	style_start_exit_pressed.corner_radius_bottom_right = 12
+	
+	btn_start_exit.add_theme_stylebox_override("normal", style_start_exit_normal)
+	btn_start_exit.add_theme_stylebox_override("hover", style_start_exit_hover)
+	btn_start_exit.add_theme_stylebox_override("pressed", style_start_exit_pressed)
+	btn_start_exit.add_theme_stylebox_override("focus", StyleBoxEmpty.new())
+	
+	# Micro-animations
+	btn_start_exit.mouse_entered.connect(func():
+		var tween = create_tween()
+		tween.tween_property(btn_start_exit, "scale", Vector2(1.05, 1.05), 0.1).set_trans(Tween.TRANS_SINE)
+	)
+	btn_start_exit.mouse_exited.connect(func():
+		var tween = create_tween()
+		tween.tween_property(btn_start_exit, "scale", Vector2(1.0, 1.0), 0.1).set_trans(Tween.TRANS_SINE)
+	)
+	
+	btn_start_exit.pressed.connect(func():
+		get_tree().quit()
+	)
+	btn_start_exit_center.add_child(btn_start_exit)
+
 func setup_end_screen() -> void:
 	end_screen = CanvasLayer.new()
 	end_screen.layer = 10
@@ -277,6 +382,21 @@ func start_game() -> void:
 		
 	# Instance and add new level
 	current_level_instance = LEVEL_SCENE.instantiate()
+	add_child(current_level_instance)
+
+func start_playground() -> void:
+	# Hide screens
+	start_screen.visible = false
+	end_screen.visible = false
+	
+	# Clean up existing level if any
+	if current_level_instance:
+		current_level_instance.queue_free()
+		current_level_instance = null
+		
+	# Instance and add new level
+	var playground_scene = preload("res://levelInitial.tscn")
+	current_level_instance = playground_scene.instantiate()
 	add_child(current_level_instance)
 
 func end_game(final_score: int) -> void:
