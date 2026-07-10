@@ -480,6 +480,7 @@ position = Vector2(536, 922)
 position = Vector2(407, 920)
 
 [node name="SlimeCharacter" parent="." unique_id=647829573 instance=ExtResource("5_0k6df")]
+position = Vector2(363, 381)
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=1123040152]
 position = Vector2(962, 539)
