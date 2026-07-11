@@ -4,7 +4,7 @@
 [ext_resource type="PackedScene" uid="uid://qlhfu8wwk8bw" path="res://slime_character.tscn" id="1_wtcfe"]
 [ext_resource type="Script" uid="uid://vgscgo0mc8iv" path="res://hud.gd" id="3_epypp"]
 [ext_resource type="PackedScene" uid="uid://j6rm5xs66rjc" path="res://Scenes/Spawner.tscn" id="4_rj586"]
-[ext_resource type="AudioStream" uid="uid://bhl03t41ol427" path="res://Slime Rescue Arena - Prototipo - Musica das fases.mp3" id="8_km5ld"]
+[ext_resource type="AudioStream" uid="uid://bvg4tj64s2soq" path="res://slime-rescue-arena-level-music-loopavel.ogg" id="8_km5ld"]
 [ext_resource type="Script" uid="uid://b6wig1hnxcl8j" path="res://camera_2d.gd" id="9_8cye3"]
 [ext_resource type="Texture2D" uid="uid://bqusx4s8jyb4o" path="res://assets/tilesetLimpo2.png" id="9_i2t4f"]
 [ext_resource type="PackedScene" uid="uid://5ym3wyqd7ms6" path="res://Scenes/killing_block.tscn" id="9_kill"]
