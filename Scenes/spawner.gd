@@ -6,8 +6,8 @@ var slime_scene = preload("res://Scenes/MiniSlime.tscn")
 var slime_instance = null
 
 func _ready():
-	print("Spawner iniciado")
-	spawn_slime()
+	# Quem decide quando e onde nascem minislimes é o SpawnManager
+	add_to_group("spawners")
 
 func spawn_slime():
 	print("Tentando spawnar")
@@ -22,12 +22,12 @@ func spawn_slime():
 		print(slime_instance)
 		print("Slime criado")
 
+func esta_livre() -> bool:
+	return not is_instance_valid(slime_instance)
+
 func slime_coletado():
 	slime_instance = null
-
-	await get_tree().create_timer(4.0).timeout
-
-	spawn_slime()
+	get_tree().call_group("spawn_manager", "vaga_liberada", self)
 
 #func esperar_area_livre():
 	#while true:

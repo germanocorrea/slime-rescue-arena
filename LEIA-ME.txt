@@ -3,8 +3,6 @@ Link do Repo: https://github.com/germanocorrea/slime-rescue-arena
 
 objetivos atuais:
 	- três bons níveis
-	- particula de ambiente
-	- particula de chão
 	- decorações atás e a frente
 	- lógica minislimes
 	- setinhas para mini slime
@@ -14,6 +12,12 @@ objetivos atuais:
 	- zoom in/out movimentação
 	- minima escolha de skin
 	- tela de créditos (salvar a soma da pontuação?)
+	- Estrelas pela pontuação alcançada
+	
+	fase 1:
+		1 estrela: 35
+		2 estrela: 55
+		3 estrela: 90
 
 
 Logica minislimes:

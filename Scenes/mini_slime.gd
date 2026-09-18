@@ -6,7 +6,15 @@ var posicao_inicial: Vector2
 var tempo := 0.0
 var offset := randf() * TAU
 
+# Pontuação: começa em 1 e ganha +1 a cada INTERVALO_PONTO segundos.
+# Encolhe até ESCALA_FINAL ao longo de VIDA_TOTAL segundos e então some.
+const INTERVALO_PONTO := 3.0
+const VIDA_TOTAL := 30.0
+const ESCALA_FINAL := 0.5
+
 var pontos := 1
+var idade := 0.0
+var escala_inicial := Vector2.ONE
 
 var coletado := false
 
@@ -58,6 +66,7 @@ var animacoes_aleatorias = [
 
 
 func _ready():
+	add_to_group("minislimes")
 	body_entered.connect(_on_body_entered)
 	posicao_inicial = global_position
 	$AnimatedSprite2D.play("spawn")
@@ -73,12 +82,26 @@ func _ready():
 	material.set_shader_parameter("new_color_1", paleta["claro"])
 	material.set_shader_parameter("new_color_2", paleta["escuro"])
 
-	pontos = paleta["pontos"]
+	escala_inicial = scale
 
 func _process(delta):
 	tempo += delta
 
+	idade += delta
+	if idade >= VIDA_TOTAL:
+		_expirar()
+		return
+	pontos = 1 + int(idade / INTERVALO_PONTO)
+	scale = escala_inicial * lerpf(1.0, ESCALA_FINAL, idade / VIDA_TOTAL)
+
 	global_position.y = posicao_inicial.y + cos(tempo * 2.0 + offset) * 10.0
+
+func _expirar() -> void:
+	if coletado:
+		return
+	coletado = true
+	spawner.slime_coletado()
+	queue_free()
 
 func _on_body_entered(body):
 	if coletado:
