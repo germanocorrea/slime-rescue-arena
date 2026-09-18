@@ -1,1 +1,20 @@
 Link do Repo: https://github.com/germanocorrea/slime-rescue-arena
+
+
+objetivos atuais:
+	- três bons níveis
+	- particula de ambiente
+	- particula de chão
+	- decorações atás e a frente
+	- lógica minislimes
+	- setinhas para mini slime
+	- slime dourado
+	- melhorar pontuação
+	- screen shake
+	- zoom in/out movimentação
+	- minima escolha de skin
+	- tela de créditos (salvar a soma da pontuação?)
+
+
+Logica minislimes:
+	a cada segundo eles ficam menores, quanto menor, mais pontos valem, se ficar muito pequeno, ele some. 

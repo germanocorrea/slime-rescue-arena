@@ -4,11 +4,13 @@
 [ext_resource type="Texture2D" uid="uid://br0owj1e40m5b" path="res://assets/Backgrouds/Back2.png" id="2_7k8bc"]
 [ext_resource type="Texture2D" uid="uid://n2fexwi4ykvr" path="res://assets/Backgrouds/Back1.png" id="3_xy6u8"]
 [ext_resource type="PackedScene" uid="uid://j6rm5xs66rjc" path="res://Scenes/Spawner.tscn" id="4_lesue"]
-[ext_resource type="PackedScene" uid="uid://qlhfu8wwk8bw" path="res://slime_character.tscn" id="5_0k6df"]
+[ext_resource type="PackedScene" uid="uid://qlhfu8wwk8bw" path="res://Scenes/Player/slime_character.tscn" id="5_0k6df"]
 [ext_resource type="Texture2D" uid="uid://cvqul3bfm1hpl" path="res://assets/Tilesets/tilesetLimpo1.png" id="6_brpap"]
-[ext_resource type="Script" uid="uid://vgscgo0mc8iv" path="res://hud.gd" id="7_2shws"]
+[ext_resource type="Script" uid="uid://vgscgo0mc8iv" path="res://Scenes/Levels/hud.gd" id="7_2shws"]
 [ext_resource type="PackedScene" uid="uid://5ym3wyqd7ms6" path="res://Scenes/killing_block.tscn" id="8_17lhr"]
 [ext_resource type="Texture2D" uid="uid://bqusx4s8jyb4o" path="res://assets/tilesetLimpo2.png" id="9_48xff"]
+
+[ext_resource type="Script" path="res://Scenes/Levels/ambient_dust.gd" id="99_dust"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_epypp"]
 texture = ExtResource("6_brpap")
@@ -446,6 +448,11 @@ offset_right = 1915.0
 offset_bottom = 1097.0
 texture = ExtResource("1_1lv7l")
 stretch_mode = 1
+
+[node name="AmbientDust" type="Node2D" parent="."]
+script = ExtResource("99_dust")
+area = Rect2(0, 0, 1920, 1100)
+count = 40
 
 [node name="TextureRect" type="TextureRect" parent="Background" unique_id=478009202]
 layout_mode = 0

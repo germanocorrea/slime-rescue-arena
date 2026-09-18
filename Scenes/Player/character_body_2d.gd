@@ -16,6 +16,7 @@ var coyote_time: float
 
 var bounce_cooldown := 0.0
 var score := 0
+var grounded_bone_count := 0
 
 var coyote_cooldown := 0.0
 var jump_time_left := 0.0
@@ -27,6 +28,7 @@ var is_respawning := false
 @onready var deathSound := $deathSound
 @onready var collectSound := $collectSound
 @onready var collisionSound := $collisionSound
+@onready var dustParticles := $DustParticles
 
 func restar_properties() -> void:
 	max_speed = default__max_speed
@@ -56,14 +58,26 @@ func _ready() -> void:
 				child.max_contacts_reported = max(child.max_contacts_reported, 4)
 				if not child.body_entered.is_connected(_on_softbody_bone_body_entered):
 					child.body_entered.connect(_on_softbody_bone_body_entered)
+				if not child.body_exited.is_connected(_on_softbody_bone_body_exited):
+					child.body_exited.connect(_on_softbody_bone_body_exited)
 
 
 func _is_killing_block(node: Node) -> bool:
 	return node != null and (node.name.begins_with("Killing Block") or node.is_in_group("killing_block"))
 
+func _is_terrain(node: Node) -> bool:
+	return node != null and not node.is_in_group("slime") and not _is_killing_block(node)
+
 func _on_softbody_bone_body_entered(body: Node) -> void:
 	if _is_killing_block(body) and not is_respawning:
 		death()
+		return
+	if _is_terrain(body):
+		grounded_bone_count += 1
+
+func _on_softbody_bone_body_exited(body: Node) -> void:
+	if _is_terrain(body):
+		grounded_bone_count = max(0, grounded_bone_count - 1)
 
 func _physics_process(delta: float) -> void:
 	process_movement(delta)
@@ -71,6 +85,11 @@ func _physics_process(delta: float) -> void:
 	move_and_slide()
 	bounce_response(before_slide_velocity, delta)
 	prevent_slime_stretching()
+	update_dust_particles()
+
+func update_dust_particles() -> void:
+	var touching_ground := is_on_floor() or grounded_bone_count > 0
+	dustParticles.emitting = touching_ground and abs(velocity.x) > 20.0
 
 func prevent_slime_stretching() -> void:
 	return
@@ -125,8 +144,9 @@ func add_score(amount: int) -> void:
 
 func respawn() -> void:
 
-	# Calculate the score after penalty (clamped at 0)
-	var new_score = max(0, score - 2)
+	# Calculate the score after penalty: lose 10% of current score (clamped at 0)
+	var penalty = int(round(score * 0.1))
+	var new_score = max(0, score - penalty)
 
 	# Make the character and softbody disappear
 	var slime_root = get_parent()
@@ -143,7 +163,7 @@ func respawn() -> void:
 	await get_tree().create_timer(0.8).timeout
 
 	# Re-instantiate the slime character
-	var character_scene = load("res://slime_character.tscn")
+	var character_scene = load("res://Scenes/Player/slime_character.tscn")
 	var new_character = character_scene.instantiate()
 	new_character.global_position = initial_position
 

@@ -1,13 +1,15 @@
 [gd_scene format=4 uid="uid://b8c7q52mip055"]
 
-[ext_resource type="PackedScene" uid="uid://dei3q3e40u4uk" path="res://parallax_background.tscn" id="1_8cye3"]
-[ext_resource type="PackedScene" uid="uid://qlhfu8wwk8bw" path="res://slime_character.tscn" id="1_wtcfe"]
-[ext_resource type="Script" uid="uid://vgscgo0mc8iv" path="res://hud.gd" id="3_epypp"]
+[ext_resource type="PackedScene" uid="uid://dei3q3e40u4uk" path="res://Scenes/Levels/parallax_background.tscn" id="1_8cye3"]
+[ext_resource type="PackedScene" uid="uid://qlhfu8wwk8bw" path="res://Scenes/Player/slime_character.tscn" id="1_wtcfe"]
+[ext_resource type="Script" uid="uid://vgscgo0mc8iv" path="res://Scenes/Levels/hud.gd" id="3_epypp"]
 [ext_resource type="PackedScene" uid="uid://j6rm5xs66rjc" path="res://Scenes/Spawner.tscn" id="4_rj586"]
-[ext_resource type="AudioStream" uid="uid://bvg4tj64s2soq" path="res://slime-rescue-arena-level-music-loopavel.ogg" id="8_km5ld"]
-[ext_resource type="Script" uid="uid://b6wig1hnxcl8j" path="res://camera_2d.gd" id="9_8cye3"]
+[ext_resource type="AudioStream" uid="uid://bvg4tj64s2soq" path="res://audio/music/slime-rescue-arena-level-music-loopavel.ogg" id="8_km5ld"]
+[ext_resource type="Script" uid="uid://b6wig1hnxcl8j" path="res://Scenes/Levels/camera_2d.gd" id="9_8cye3"]
 [ext_resource type="Texture2D" uid="uid://bqusx4s8jyb4o" path="res://assets/tilesetLimpo2.png" id="9_i2t4f"]
 [ext_resource type="PackedScene" uid="uid://5ym3wyqd7ms6" path="res://Scenes/killing_block.tscn" id="9_kill"]
+
+[ext_resource type="Script" path="res://Scenes/Levels/ambient_dust.gd" id="99_dust"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_8cye3"]
 texture = ExtResource("9_i2t4f")
@@ -355,6 +357,11 @@ sources/0 = SubResource("TileSetAtlasSource_8cye3")
 [node name="Node2D" type="Node2D" unique_id=1837477100]
 
 [node name="Parallax_Background" parent="." unique_id=1021476687 instance=ExtResource("1_8cye3")]
+
+[node name="AmbientDust" type="Node2D" parent="."]
+script = ExtResource("99_dust")
+area = Rect2(-100, 0, 2700, 1350)
+count = 70
 
 [node name="SlimeCharacter" parent="." unique_id=647829573 instance=ExtResource("1_wtcfe")]
 position = Vector2(593, 430)

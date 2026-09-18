@@ -1,6 +1,6 @@
 extends Node
 
-const LEVEL_SCENE = preload("res://level.tscn")
+const LEVEL_SCENE = preload("res://Scenes/Levels/level.tscn")
 
 var start_screen: CanvasLayer
 var end_screen: CanvasLayer
@@ -434,7 +434,7 @@ func start_game() -> void:
 	restart_game()
 
 func start_playground() -> void:
-	current_scene_to_load = preload("res://levelInitial.tscn")
+	current_scene_to_load = preload("res://Scenes/Levels/levelInitial.tscn")
 	restart_game()
 
 func restart_game() -> void:
