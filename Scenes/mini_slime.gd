@@ -67,7 +67,7 @@ var animacoes_aleatorias = [
 
 func _ready():
 	add_to_group("minislimes")
-	body_entered.connect(_on_body_entered)
+	# O sinal body_entered já está ligado a _on_body_entered na cena (MiniSlime.tscn)
 	posicao_inicial = global_position
 	$AnimatedSprite2D.play("spawn")
 	$Timer.wait_time = randf_range(4.0, 8.0)
@@ -109,9 +109,8 @@ func _on_body_entered(body):
 	if body.name.begins_with("Bone"):
 		coletado = true
 		var character = body.get_parent().get_parent().get_node_or_null("CharacterBody2D")
-		if character and character.has_method("add_score"):
-			character.add_score(pontos)
-		print("MiniSlime coletado! +", pontos, " pontos")
+		if character and character.has_method("collect"):
+			character.collect(pontos, global_position)
 		spawner.slime_coletado()
 		queue_free()
 

@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://5ym3wyqd7ms6"]
 
-[ext_resource type="Texture2D" uid="uid://c2ts48capxm46" path="res://assets/death_block.png" id="1_lxqyx"]
+[ext_resource type="Texture2D" uid="uid://c41a1opxq81i6" path="res://assets/SpikeBlock.png" id="1_lxqyx"]
 [ext_resource type="Script" uid="uid://b70f0l25s4uw3" path="res://Scenes/killing_block.gd" id="1_script"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_i2t4f"]

@@ -1,8 +1,8 @@
 extends Node2D
 
 const DUST_TEXTURES: Array[Texture2D] = [
-	preload("res://assets/poeiraAr.png"),
-	preload("res://assets/poeiraAr2.png"),
+	preload("res://assets/Particles/poeiraAr.png"),
+	preload("res://assets/Particles/poeiraAr2.png"),
 ]
 const ALT_TEXTURE_CHANCE := 0.3 # chance of using poeiraAr2.png
 
@@ -27,7 +27,7 @@ func _ready() -> void:
 		var sprite := Sprite2D.new()
 		var alt := _rng.randf() < ALT_TEXTURE_CHANCE
 		sprite.texture = DUST_TEXTURES[1 if alt else 0]
-		sprite.scale = Vector2.ONE * _rng.randf_range(3.0, 5.0)
+		sprite.scale = Vector2.ONE * _rng.randf_range(0.75, 1.25) # sprites são 16x16 (antes 4x4 com escala 3–5)
 		sprite.modulate.a = _rng.randf_range(0.35, 0.8)
 		sprite.position = Vector2(
 			_rng.randf_range(area.position.x, area.end.x),

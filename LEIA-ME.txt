@@ -2,23 +2,85 @@ Link do Repo: https://github.com/germanocorrea/slime-rescue-arena
 
 
 objetivos atuais:
-	- três bons níveis
-	- decorações atás e a frente
-	- lógica minislimes
-	- setinhas para mini slime
+	- melhorar a tela de créditos (versão inicial: álbum de fotos + e-mail de contato)
+
+
+já feito:
+	- três fases + Playground, com seletor de fases
+	- estrelas por pontuação (tela de fim, HUD e seletor de fases)
 	- slime dourado
-	- melhorar pontuação
-	- screen shake
-	- zoom in/out movimentação
-	- minima escolha de skin
-	- tela de créditos (salvar a soma da pontuação?)
-	- Estrelas pela pontuação alcançada
-	
-	fase 1:
-		1 estrela: 35
-		2 estrela: 55
-		3 estrela: 90
+	- combo de coleta
+	- screen shake, zoom por velocidade, look-ahead e dead zone na câmera
+	- escolha de skin (torre de skins por estrelas)
+	- tela de configurações (volume da música)
+	- tela de créditos (versão inicial)
+	- tela de carregamento falsa + contagem 3, 2, 1
+	- decorações, setinhas para minislimes, contagem regressiva do tempo
 
 
-Logica minislimes:
-	a cada segundo eles ficam menores, quanto menor, mais pontos valem, se ficar muito pequeno, ele some. 
+controles:
+	setas ou WASD para mover
+	cima / W: pular (segurar = pulo mais alto)
+	baixo / S: cair mais rápido e frear o quique
+	Esc: encerra a partida (a pontuação parcial conta)
+
+
+estrelas por fase (pontuação mínima):
+	fase 1: 30 / 55 / 85
+	fase 2: 40 / 70 / 100
+	fase 3: 50 / 85 / 120
+	playground: 30 / 55 / 85 (não salva pontuação)
+	(limites em LEVELS, Scenes/Main/game_manager.gd)
+
+
+torre de skins (estrelas somadas das 3 fases, máximo 9):
+	ciano: livre
+	amarelo, laranja, verde: 2 estrelas
+	vermelho, roxo: 5 estrelas
+	dourado: 8 estrelas (deixa rastro de partículas)
+
+
+lógica minislimes:
+	nascem nos spawners (máx. 3 ao mesmo tempo, 1 s entre uma coleta e o próximo nascer).
+	a cada 3 segundos vale +1 ponto (começa em 1) e eles encolhem até 50% do tamanho.
+	depois de 30 segundos eles somem.
+	no Playground todos os spawners são independentes (4 s depois de sumir, nasce outro).
+
+
+combo de coleta:
+	coletar outro minislime em até 3 s sobe o multiplicador: x2, x3, x4 e x5 (máximo).
+	os pontos ganhos são multiplicados, e o multiplicador aparece ao lado do "+N".
+	o som de coleta sobe 3 semitons por nível de combo.
+	passou de 3 s sem coletar: volta ao x1. Morrer não zera o combo (a janela de 3 s continua
+	correndo enquanto o slime está morto).
+
+
+slime dourado:
+	vale 15 pontos e fica vivo por 20 segundos, andando em loop pelos pontos de GoldenPath.
+	nasce uma vez por partida, só depois de passada a metade do tempo da fase e se algum
+	ponto do caminho estiver a 1100 px ou mais do player. A seta dourada aponta para ele.
+	o caminho é feito pelos Marker2D (Point1, Point2...) do nó GoldenPath de cada fase.
+
+
+tempo da fase:
+	120 segundos (ou 500 pontos). Faltando 30 s a música acelera; faltando 10 s o timer
+	cresce e pisca em vermelho.
+
+
+onde ficam os saves (user://):
+	Linux: ~/.local/share/godot/app_userdata/Slime Rescue Arena/
+	progress.cfg  -> melhor pontuação de cada fase (as estrelas são calculadas na hora)
+	settings.cfg  -> skin escolhida e volume da música
+
+
+arquivos principais:
+	Scenes/Main/game_manager.gd   telas (menu, fases, skins, configurações, fim), abertura de fase
+	Scenes/Main/level_progress.gd pontuações salvas
+	Scenes/Main/skin_settings.gd  skins (recorte do spritesheet, desbloqueio, torre)
+	Scenes/Main/audio_settings.gd volume da música
+	Scenes/Player/character_body_2d.gd  movimento, combo, sons, skin
+	Scenes/spawn_manager.gd / spawner.gd  spawn dos minislimes
+	Scenes/golden_slime_manager.gd / golden_mini_slime.gd  slime dourado
+	Scenes/collect_effect.gd      partículas e "+N xM" da coleta
+	Scenes/Levels/camera_2d.gd    câmera (zoom, look-ahead, dead zone, shake)
+	Scenes/Levels/hud.gd          placar, estrelas, timer

@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bqusx4s8jyb4o"
-path="res://.godot/imported/tilesetLimpo2.png-2e22f2d3ac74199e5430f21ca8ee19da.ctex"
+uid="uid://7rjoxxf6f6h7"
+path="res://.godot/imported/Slime_eyes_animation.png-9448a9d04f75fa0ca540dbd2a7f94c59.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/tilesetLimpo2.png"
-dest_files=["res://.godot/imported/tilesetLimpo2.png-2e22f2d3ac74199e5430f21ca8ee19da.ctex"]
+source_file="res://assets/Skins/Slime_eyes_animation.png"
+dest_files=["res://.godot/imported/Slime_eyes_animation.png-9448a9d04f75fa0ca540dbd2a7f94c59.ctex"]
 
 [params]
 

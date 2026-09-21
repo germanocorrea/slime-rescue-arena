@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://7rjoxxf6f6h7"
-path="res://.godot/imported/Slime_eyes_animation.png-be36e1001ce9a1a88134b9abebb99b52.ctex"
+uid="uid://bgfwwxwrx43b"
+path="res://.godot/imported/Slime_eyes.png-8653dae97add8f95aa1bb2d25842f9ca.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/Slime_eyes_animation.png"
-dest_files=["res://.godot/imported/Slime_eyes_animation.png-be36e1001ce9a1a88134b9abebb99b52.ctex"]
+source_file="res://assets/Skins/Slime_eyes.png"
+dest_files=["res://.godot/imported/Slime_eyes.png-8653dae97add8f95aa1bb2d25842f9ca.ctex"]
 
 [params]
 

@@ -10,17 +10,12 @@ func _ready():
 	add_to_group("spawners")
 
 func spawn_slime():
-	print("Tentando spawnar")
-
 	if slime_instance == null:
-		print("Criando slime")
 		slime_instance = slime_scene.instantiate()
 		#slime_instance.global_position = global_position
 		slime_instance.global_position = Vector2(0,0)
 		slime_instance.spawner = self
 		add_child(slime_instance)
-		print(slime_instance)
-		print("Slime criado")
 
 func esta_livre() -> bool:
 	return not is_instance_valid(slime_instance)

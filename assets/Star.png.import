@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bgfwwxwrx43b"
-path="res://.godot/imported/Slime_eyes.png-0c300493808cc4105a871d1c3feee3c4.ctex"
+uid="uid://bd3dyklxt1st7"
+path="res://.godot/imported/Star.png-48bce4428bb68a25482e64a40951a72e.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/Slime_eyes.png"
-dest_files=["res://.godot/imported/Slime_eyes.png-0c300493808cc4105a871d1c3feee3c4.ctex"]
+source_file="res://assets/Star.png"
+dest_files=["res://.godot/imported/Star.png-48bce4428bb68a25482e64a40951a72e.ctex"]
 
 [params]
 

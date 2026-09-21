@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://ccan3m1uok41n"
-path="res://.godot/imported/Slime1_big.png-9dd328ae892b1924d5f79f2af10b95a2.ctex"
+uid="uid://cpj5paqb84p3l"
+path="res://.godot/imported/Arrow_gold.png-ef4dd64eb2ac1a9dc5d070fb872bd475.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/Slime1_big.png"
-dest_files=["res://.godot/imported/Slime1_big.png-9dd328ae892b1924d5f79f2af10b95a2.ctex"]
+source_file="res://assets/Skins/Arrow_gold.png"
+dest_files=["res://.godot/imported/Arrow_gold.png-ef4dd64eb2ac1a9dc5d070fb872bd475.ctex"]
 
 [params]
 

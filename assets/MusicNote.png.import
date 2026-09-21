@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://damf825vc84gr"
-path="res://.godot/imported/Arrow_blue.png-0e27c3b2b000c457202719be7c2c7d77.ctex"
+uid="uid://8cyxetwj2c67"
+path="res://.godot/imported/MusicNote.png-9d18cd1e5b8b02eb76a5bbb32e3b2463.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/Arrow_blue.png"
-dest_files=["res://.godot/imported/Arrow_blue.png-0e27c3b2b000c457202719be7c2c7d77.ctex"]
+source_file="res://assets/MusicNote.png"
+dest_files=["res://.godot/imported/MusicNote.png-9d18cd1e5b8b02eb76a5bbb32e3b2463.ctex"]
 
 [params]
 

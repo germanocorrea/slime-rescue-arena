@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dcav8pg2d0nf"
-path="res://.godot/imported/poeiraAr.png-99962a0c69996ce71c9e150391cc7ae2.ctex"
+uid="uid://bp458oguip3et"
+path="res://.godot/imported/poeiraAr2.png-a83305d34b7596fa07ebf880cdf49918.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/poeiraAr.png"
-dest_files=["res://.godot/imported/poeiraAr.png-99962a0c69996ce71c9e150391cc7ae2.ctex"]
+source_file="res://assets/Particles/poeiraAr2.png"
+dest_files=["res://.godot/imported/poeiraAr2.png-a83305d34b7596fa07ebf880cdf49918.ctex"]
 
 [params]
 

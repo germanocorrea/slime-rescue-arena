@@ -1,13 +1,35 @@
 extends CanvasLayer
 
 const PIXEL_FONT := preload("res://fonts/PressStart2P-Regular.ttf")
+const STAR_ON_TEXTURE := preload("res://assets/Star.png")
+const STAR_OFF_TEXTURE := preload("res://assets/Star_off.png")
+
+# Contagem regressiva
+const MUSIC_SPEEDUP_TIME := 30.0 # a música acelera quando falta este tempo (s)
+const MUSIC_SPEEDUP_PITCH := 1.15
+const TIME_WARNING := 10.0 # o timer pisca em vermelho e cresce nos últimos segundos
+const TIME_FONT_SIZE := 28
+const TIME_WARNING_FONT_SIZE := 44
+const TIME_NORMAL_COLOR := Color(1, 1, 1)
+const TIME_WARNING_COLOR := Color(1.0, 0.2, 0.2)
+const STAR_SIZE := Vector2(40, 40)
 
 @onready var score_label: Label = $ScoreLabel
 
 var score_panel: PanelContainer
+var time_panel: PanelContainer
 var time_label: Label
 var timer: Timer
 var time_left := 120.0
+var music_sped_up := false
+var star_thresholds: Array = []
+var star_rects: Array[TextureRect] = []
+var star_earned: Array[bool] = []
+@onready var total_time := time_left
+
+# Fração do tempo da fase que já passou (0 = começo, 1 = acabou).
+func elapsed_ratio() -> float:
+	return 1.0 - time_left / total_time
 
 func _ready() -> void:
 	setup_score_panel()
@@ -41,8 +63,13 @@ func setup_score_panel() -> void:
 	score_panel.position = Vector2(20, 10)
 	add_child(score_panel)
 
+	# Placar em cima, estrelas da fase embaixo
+	var score_box := VBoxContainer.new()
+	score_box.add_theme_constant_override("separation", 10)
+	score_panel.add_child(score_box)
+
 	remove_child(score_label)
-	score_panel.add_child(score_label)
+	score_box.add_child(score_label)
 
 	score_label.anchor_right = 0.0
 	score_label.anchor_bottom = 0.0
@@ -50,9 +77,46 @@ func setup_score_panel() -> void:
 	score_label.offset_bottom = 0.0
 	style_pixel_label(score_label, 28, Color(1, 1, 1))
 
+	setup_stars(score_box)
+
+# As estrelas começam apagadas e acendem quando a pontuação atinge cada limite da fase.
+func setup_stars(parent: Control) -> void:
+	var game_manager := get_tree().get_first_node_in_group("game_manager")
+	if game_manager and "current_star_thresholds" in game_manager:
+		star_thresholds = game_manager.current_star_thresholds
+	if star_thresholds.is_empty():
+		return
+
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 6)
+	parent.add_child(row)
+	for i in star_thresholds.size():
+		var star := TextureRect.new()
+		star.texture = STAR_OFF_TEXTURE
+		star.custom_minimum_size = STAR_SIZE
+		star.pivot_offset = STAR_SIZE / 2.0
+		star.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		star.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		star.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+		row.add_child(star)
+		star_rects.append(star)
+		star_earned.append(false)
+
+func update_stars(score: int) -> void:
+	for i in star_rects.size():
+		var earned: bool = score >= star_thresholds[i]
+		if earned == star_earned[i]:
+			continue
+		star_earned[i] = earned
+		star_rects[i].texture = STAR_ON_TEXTURE if earned else STAR_OFF_TEXTURE
+		if earned:
+			var tween := create_tween()
+			tween.tween_property(star_rects[i], "scale", Vector2.ONE, 0.4) \
+				.from(Vector2(1.8, 1.8)).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+
 func setup_timer() -> void:
 
-	var time_panel := make_hud_panel()
+	time_panel = make_hud_panel()
 	time_panel.name = "TimePanel"
 	time_panel.anchor_left = 1.0
 	time_panel.anchor_top = 0.0
@@ -64,7 +128,7 @@ func setup_timer() -> void:
 	time_label = Label.new()
 	time_label.name = "TimeLabel"
 	time_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-	style_pixel_label(time_label, 28, Color(1, 1, 1))
+	style_pixel_label(time_label, TIME_FONT_SIZE, TIME_NORMAL_COLOR)
 	time_panel.add_child(time_label)
 	update_timer_display()
 
@@ -82,6 +146,7 @@ var score_tween: Tween
 func update_score(new_score: int) -> void:
 	var delta := new_score - current_score
 	current_score = new_score
+	update_stars(new_score)
 
 	if delta != 0:
 		show_score_popup(delta)
@@ -123,7 +188,7 @@ func show_score_popup(delta: int) -> void:
 func update_timer_display() -> void:
 	var minutes := int(time_left) / 60
 	var seconds := int(time_left) % 60
-	time_label.text = "Time %02d:%02d" % [minutes, seconds]
+	time_label.text = "Tempo %02d:%02d" % [minutes, seconds]
 
 func _on_timer_timeout() -> void:
 	if time_left > 0:
@@ -131,6 +196,25 @@ func _on_timer_timeout() -> void:
 		if time_left < 0:
 			time_left = 0.0
 		update_timer_display()
+		update_countdown()
 		if time_left == 0.0:
 			timer.stop()
 			get_tree().call_group("game_manager", "end_game", current_score)
+
+# Faltando MUSIC_SPEEDUP_TIME a música acelera; faltando TIME_WARNING o timer cresce e pisca.
+func update_countdown() -> void:
+	if time_left <= MUSIC_SPEEDUP_TIME and not music_sped_up:
+		music_sped_up = true
+		var soundtrack := get_parent().get_node_or_null("soundtrack") as AudioStreamPlayer
+		if soundtrack:
+			create_tween().tween_property(soundtrack, "pitch_scale", MUSIC_SPEEDUP_PITCH, 1.5)
+
+	if time_left <= TIME_WARNING and time_left > 0.0:
+		time_label.add_theme_font_size_override("font_size", TIME_WARNING_FONT_SIZE)
+
+func _process(_delta: float) -> void:
+	if time_left > TIME_WARNING or time_left <= 0.0:
+		return
+	# Alterna entre vermelho e branco 4 vezes por segundo
+	var red := int(Time.get_ticks_msec() / 250.0) % 2 == 0
+	time_label.add_theme_color_override("font_color", TIME_WARNING_COLOR if red else TIME_NORMAL_COLOR)
