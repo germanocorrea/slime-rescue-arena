@@ -71,7 +71,10 @@ func _add_particles() -> void:
 
 # Verde no x2, passando por amarelo e laranja, até vermelho no x5
 func _multiplier_color() -> Color:
-	var t := clampf(float(multiplier - COMBO_MIN) / float(COMBO_MAX - COMBO_MIN), 0.0, 1.0)
+	return multiplier_color(multiplier)
+
+static func multiplier_color(combo_multiplier: int) -> Color:
+	var t := clampf(float(combo_multiplier - COMBO_MIN) / float(COMBO_MAX - COMBO_MIN), 0.0, 1.0)
 	return Color.from_hsv(lerpf(0.33, 0.0, t), 0.8, 1.0)
 
 func _make_label(text: String, font_size: int, color: Color) -> Label:

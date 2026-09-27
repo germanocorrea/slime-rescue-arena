@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://c2ts48capxm46"
-path="res://.godot/imported/death_block.png-c539a49a6a808b243be58ba3b6d0f528.ctex"
+uid="uid://bj1br845g6e6t"
+path="res://.godot/imported/Configuration-Sheet.png-c88c503aa50290377a9590fe9aae6ef1.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/death_block.png"
-dest_files=["res://.godot/imported/death_block.png-c539a49a6a808b243be58ba3b6d0f528.ctex"]
+source_file="res://assets/Configuration-Sheet.png"
+dest_files=["res://.godot/imported/Configuration-Sheet.png-c88c503aa50290377a9590fe9aae6ef1.ctex"]
 
 [params]
 

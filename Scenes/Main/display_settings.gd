@@ -29,5 +29,8 @@ static func toggle() -> void:
 	set_fullscreen(not is_fullscreen())
 
 static func apply() -> void:
+	# No navegador a tela cheia só é permitida depois de um clique do jogador, então não se aplica sozinha
+	if OS.has_feature("web"):
+		return
 	var mode := DisplayServer.WINDOW_MODE_FULLSCREEN if is_fullscreen() else DisplayServer.WINDOW_MODE_WINDOWED
 	DisplayServer.window_set_mode(mode)

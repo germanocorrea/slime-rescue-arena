@@ -6,7 +6,7 @@ objetivos atuais:
 
 
 já feito:
-	- três fases + Playground, com seletor de fases
+	- três fases + Tutorial, com seletor de fases
 	- estrelas por pontuação (tela de fim, HUD e seletor de fases)
 	- slime dourado
 	- combo de coleta
@@ -16,6 +16,13 @@ já feito:
 	- tela de créditos (versão inicial)
 	- tela de carregamento falsa + contagem 3, 2, 1
 	- decorações, setinhas para minislimes, contagem regressiva do tempo
+
+
+versão do jogo:
+	constante GAME_VERSION no topo de Scenes/Main/game_manager.gd (aparece no canto do menu).
+	atualize a cada build enviada e use o mesmo número na tag do git (ex.: git tag v0.1).
+	na versão Web: o botão "Sair", a tela cheia automática, o F11 e a opção de tela cheia
+	nas configurações ficam desligados (o navegador/itch.io cuida disso).
 
 
 controles:
@@ -29,7 +36,7 @@ estrelas por fase (pontuação mínima):
 	fase 1: 30 / 55 / 85
 	fase 2: 40 / 70 / 100
 	fase 3: 50 / 85 / 120
-	playground: 30 / 55 / 85 (não salva pontuação)
+	tutorial: 30 / 55 / 85 (não salva pontuação)
 	(limites em LEVELS, Scenes/Main/game_manager.gd)
 
 
@@ -41,17 +48,17 @@ torre de skins (estrelas somadas das 3 fases, máximo 9):
 
 
 lógica minislimes:
-	nascem nos spawners (máx. 3 ao mesmo tempo, 1 s entre uma coleta e o próximo nascer).
+	nascem nos spawners (máx. 3 ao mesmo tempo na fase 1, 4 na fase 2 e 5 na fase 3, 1 s entre uma coleta e o próximo nascer).
 	a cada 3 segundos vale +1 ponto (começa em 1) e eles encolhem até 50% do tamanho.
 	depois de 30 segundos eles somem.
-	no Playground todos os spawners são independentes (4 s depois de sumir, nasce outro).
+	no Tutorial todos os spawners são independentes (4 s depois de sumir, nasce outro).
 
 
 combo de coleta:
-	coletar outro minislime em até 3 s sobe o multiplicador: x2, x3, x4 e x5 (máximo).
+	coletar outro minislime em até 3,5 s sobe o multiplicador: x2, x3, x4 e x5 (máximo).
 	os pontos ganhos são multiplicados, e o multiplicador aparece ao lado do "+N".
 	o som de coleta sobe 3 semitons por nível de combo.
-	passou de 3 s sem coletar: volta ao x1. Morrer não zera o combo (a janela de 3 s continua
+	passou de 3,5 s sem coletar: volta ao x1. Morrer não zera o combo (a janela de 3,5 s continua
 	correndo enquanto o slime está morto).
 
 

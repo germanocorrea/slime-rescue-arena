@@ -1,18 +1,28 @@
 extends Node
 
+# Versão mostrada no canto do menu. Atualize a cada build enviada (e use a mesma na tag do git).
+const GAME_VERSION := "v0.1"
+
 const LevelProgress = preload("res://Scenes/Main/level_progress.gd")
+const CollectEffect = preload("res://Scenes/collect_effect.gd")
 const SkinSettings = preload("res://Scenes/Main/skin_settings.gd")
 const AudioSettings = preload("res://Scenes/Main/audio_settings.gd")
 const DisplaySettings = preload("res://Scenes/Main/display_settings.gd")
 const TitleBanner = preload("res://Scenes/Main/title_banner.gd")
-const CONFIG_ICON = preload("res://assets/Configuration.png")
-const CONFIG_BUTTON_SIZE := Vector2(192, 192) # 2x o tamanho original do ícone (96 px)
+const CONFIG_SHEET = preload("res://assets/Configuration-Sheet.png")
+const CONFIG_SHEET_CELL := 128 # a folha é uma grade 3x3; o ícone ocupa 72 px no meio de cada célula
+const CONFIG_SHEET_ICON := 72
+const CONFIG_BUTTON_SIZE := Vector2(108, 108) # 1,5x o tamanho do ícone (72 px)
+const BLUE_ARROW_SHEET = preload("res://assets/Skins/ArrowSheet.png") # a seta azul é a primeira (15x15), apontando para cima
+const X_SPRITE = preload("res://assets/x_sprite.png")
 const PIXEL_FONT = preload("res://fonts/PressStart2P-Regular.ttf")
 const MINISLIME_SCENE = preload("res://Scenes/MiniSlime.tscn") # só para reaproveitar as animações
 const CREDITS_PHOTO_1 = preload("res://assets/FotoCreditos1.jpeg")
 const CREDITS_PHOTO_2 = preload("res://assets/FotoCreditos2.jpeg")
 const CREDITS_EMAIL := "carlos.cunha002@edu.pucrs.br"
 const MUSIC_ICON = preload("res://assets/MusicNote.png")
+const AUDIO_ICON = preload("res://assets/AudioIcon.png")
+const SFX_PREVIEW = preload("res://audio/sfx/coin_SFX.wav")
 const MUSIC_PREVIEW = preload("res://audio/music/slime-rescue-arena-level-music-loopavel.ogg")
 const STAR_ON_TEXTURE = preload("res://assets/Star.png")
 const STAR_OFF_TEXTURE = preload("res://assets/Star_off.png")
@@ -35,16 +45,17 @@ const TAGLINES: Array[String] = [
 	"Pule com responsabilidade!",
 	"Dica: espinhos machucam. Acredita?",
 	"Feito com carinho, café e bugs",
-	"Se o slime caiu, foi de propósito",
+	"Quer molesa? Senta no slime",
 	"100% gosma orgânica, zero conservantes",
-	"O maior record da fase 3 foi 214, boa sorte!",
+	"O maior record da fase 3 foi 314, boa sorte!",
 	"Combo x5? Isso é que é talento!",
 	"Insira uma moeda... ah, é de graça",
 	"Alguém realmente lê isso?",
 	"Tá difícil? Culpa do slime, não sua",
 	"Sem glúten, com muita gosma",
-	"Ninguém pula tão bem quanto uma gelatina",
+	"Ninguém quica tão bem quanto você!",
 	"1 a cada 10 slimes não recomendariam a sua pasta de dente",
+	"Atire para dar dano",
 ]
 
 # Abertura de fase: tela preta entra da direita, "carrega" e sai para a esquerda; depois, a contagem.
@@ -55,15 +66,27 @@ const LOADING_ANIMATIONS: Array[StringName] = [&"action1", &"action2", &"action3
 
 const STAR_COUNT := 3
 
+const TUTORIAL_ID := "tutorial"
+# Telas do tutorial: título, texto e (opcional) minislimes de exemplo com a legenda embaixo.
+const TUTORIAL_PAGES := [
+	{"title": "Controles", "text": "Mova o slime com W A S D ou com as setinhas do teclado.", "keys": true},
+	{"title": "Minislimes", "text": "Os minislimes somem após 30 segundos na tela. Eles começam valendo 1 ponto e ganham pontos a cada 3 segundos.", "highlight": "Quanto menor, mais vale!",
+		"slimes": [{"scale": 2.0, "label": "1"}, {"scale": 1.0, "label": "10"}]},
+	{"title": "Combo", "text": "O combo funciona pegando os minislimes rápido: cada coleta seguida, em poucos segundos, aumenta o multiplicador de pontos!", "combo": true},
+]
+
+signal tutorial_finished
+
 # Fases da tela de seleção, na ordem em que aparecem. "stars" = pontuação mínima
 # de cada estrela. A cena é carregada só quando a fase é aberta; se o arquivo
-# ainda não existe, a fase aparece como "Em breve". "free" = modo livre (Playground):
+# ainda não existe, a fase aparece como "Em breve". "free" = modo livre (Tutorial):
 # sem estrelas nem pontuação salva, mas as estrelas da tela de fim ainda usam "stars".
+# "requires" = id da fase que precisa ter sido jogada (terminada) ao menos uma vez.
 const LEVELS := [
-	{"id": "level1", "name": "Fase 1", "path": "res://Scenes/Levels/level.tscn", "stars": [30, 55, 85]},
-	{"id": "level2", "name": "Fase 2", "path": "res://Scenes/Levels/level2.tscn", "stars": [40, 70, 100]},
-	{"id": "level3", "name": "Fase 3", "path": "res://Scenes/Levels/level3.tscn", "stars": [50, 85, 120]},
-	{"id": "", "name": "Playground", "path": "res://Scenes/Levels/levelInitial.tscn", "stars": [30, 55, 85], "free": true},
+	{"id": "tutorial", "name": "Tutorial", "path": "res://Scenes/Levels/levelInitial.tscn", "stars": [30, 55, 85], "free": true},
+	{"id": "level1", "name": "Fase 1", "path": "res://Scenes/Levels/level.tscn", "stars": [40, 70, 100], "requires": "tutorial"},
+	{"id": "level2", "name": "Fase 2", "path": "res://Scenes/Levels/level2.tscn", "stars": [40, 70, 100], "requires": "level1"},
+	{"id": "level3", "name": "Fase 3", "path": "res://Scenes/Levels/level3.tscn", "stars": [50, 85, 130], "requires": "level2"},
 ]
 
 var start_screen: CanvasLayer
@@ -74,7 +97,7 @@ var next_star_label: Label
 var current_level_instance: Node = null
 var current_scene_to_load: PackedScene = null
 var current_star_thresholds: Array[int] = [30, 55, 85]
-var current_level_id := "" # vazio = Playground (não salva progresso)
+var current_level_id := ""
 var level_select_screen: CanvasLayer
 var skins_screen: CanvasLayer
 var skins_tower: VBoxContainer
@@ -93,6 +116,9 @@ var transitioning := false # true durante a abertura da fase (bloqueia cliques e
 var music_slider: HSlider
 var music_value_label: Label
 var music_preview: AudioStreamPlayer
+var sfx_preview: AudioStreamPlayer
+var sfx_slider: HSlider
+var sfx_value_label: Label
 var fullscreen_button: Button
 var settings_from_end_screen := false # de onde a tela de configurações foi aberta
 var skins_stars_label: Label
@@ -112,7 +138,7 @@ func _ready() -> void:
 	setup_settings_screen()
 	setup_credits_screen()
 	setup_transition_layer()
-	AudioSettings.apply() # aplica o volume da música salvo
+	AudioSettings.apply() # aplica os volumes de música e sons salvos
 	DisplaySettings.apply() # tela cheia (padrão) ou janela, conforme salvo
 	
 	# Show start screen first
@@ -140,6 +166,7 @@ func setup_start_screen() -> void:
 	control.add_child(center)
 	
 	_add_settings_button(control, false)
+	_add_version_label(control)
 	
 	var vbox = VBoxContainer.new()
 	vbox.add_theme_constant_override("separation", 40)
@@ -263,6 +290,8 @@ func setup_start_screen() -> void:
 		get_tree().quit()
 	)
 	btn_start_exit_center.add_child(btn_start_exit)
+	# No navegador não dá para fechar o jogo, então o botão não faz sentido
+	btn_start_exit_center.visible = not OS.has_feature("web")
 
 func setup_end_screen() -> void:
 	end_screen = CanvasLayer.new()
@@ -448,7 +477,9 @@ func show_end_screen(score: int) -> void:
 	final_score_label.text = "Final Score: " + str(score)
 	update_stars(score)
 	if current_level_id != "":
-		LevelProgress.record_score(current_level_id, score)
+		LevelProgress.mark_played(current_level_id)
+		if not _is_free_level(current_level_id):
+			LevelProgress.record_score(current_level_id, score)
 	start_screen.visible = false
 	level_select_screen.visible = false
 	skins_screen.visible = false
@@ -469,10 +500,32 @@ func update_stars(score: int) -> void:
 		var unit := "ponto" if missing == 1 else "pontos"
 		next_star_label.text = "%d %s para a próxima estrela" % [missing, unit]
 
+# Ícone da folha de configurações (coluna, linha): 0,0 engrenagem; 1,0 direita; 2,0 esquerda;
+# 0,1 baixo; 1,1 cima; 2,1 W; 0,2 A; 1,2 S; 2,2 D.
+func _sheet_icon(column: int, row: int) -> Texture2D:
+	var atlas := AtlasTexture.new()
+	atlas.atlas = CONFIG_SHEET
+	var margin := (CONFIG_SHEET_CELL - CONFIG_SHEET_ICON) / 2
+	atlas.region = Rect2(column * CONFIG_SHEET_CELL + margin, row * CONFIG_SHEET_CELL + margin,
+			CONFIG_SHEET_ICON, CONFIG_SHEET_ICON)
+	return atlas
+
+func _is_free_level(level_id: String) -> bool:
+	for level in LEVELS:
+		if level["id"] == level_id:
+			return level.get("free", false)
+	return false
+
+func _is_level_unlocked(level: Dictionary) -> bool:
+	var required: String = level.get("requires", "")
+	return required == "" or LevelProgress.was_played(required)
+
 func start_level(index: int) -> void:
 	if transitioning:
 		return
 	var level: Dictionary = LEVELS[index]
+	if not _is_level_unlocked(level):
+		return
 	current_scene_to_load = load(level["path"])
 	current_star_thresholds.assign(level["stars"])
 	current_level_id = level["id"]
@@ -521,7 +574,7 @@ func end_game(final_score: int) -> void:
 
 func _input(event: InputEvent) -> void:
 	# F11 alterna a tela cheia em qualquer momento
-	if event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_F11:
+	if not OS.has_feature("web") and event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_F11:
 		DisplaySettings.toggle()
 		_update_fullscreen_button()
 		return
@@ -596,7 +649,9 @@ func show_level_select() -> void:
 
 func _make_level_row(index: int) -> Control:
 	var level: Dictionary = LEVELS[index]
-	var available := ResourceLoader.exists(level["path"])
+	var exists := ResourceLoader.exists(level["path"])
+	var unlocked := _is_level_unlocked(level)
+	var available := exists and unlocked
 	var best := LevelProgress.get_best_score(level["id"])
 	var earned := LevelProgress.count_stars(best, level["stars"])
 
@@ -648,7 +703,7 @@ func _make_level_row(index: int) -> Control:
 	score_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	row.add_child(score_label)
 
-	var btn = _make_menu_button("Jogar" if available else "Em breve",
+	var btn = _make_menu_button("Jogar" if available else ("Bloqueada" if exists else "Em breve"),
 			Color(0.18, 0.65, 0.35) if available else Color(0.3, 0.3, 0.35), Vector2(220, 72), 32)
 	btn.disabled = not available
 	btn.pressed.connect(start_level.bind(index))
@@ -714,7 +769,7 @@ func _get_selector_frames() -> SpriteFrames:
 
 # ---------- Tela de skins ----------
 
-# Soma das estrelas conquistadas em todas as fases (o Playground não conta).
+# Soma das estrelas conquistadas em todas as fases (o Tutorial não conta).
 func get_total_stars() -> int:
 	var total := 0
 	for level in LEVELS:
@@ -919,6 +974,11 @@ func setup_settings_screen() -> void:
 	music_preview.bus = &"Soundtrack"
 	add_child(music_preview)
 
+	sfx_preview = AudioStreamPlayer.new()
+	sfx_preview.stream = SFX_PREVIEW
+	sfx_preview.bus = &"SFX"
+	add_child(sfx_preview)
+
 	var control = Control.new()
 	control.set_anchors_preset(Control.PRESET_FULL_RECT)
 	settings_screen.add_child(control)
@@ -941,8 +1001,10 @@ func setup_settings_screen() -> void:
 	title_box.add_theme_constant_override("separation", 24)
 	vbox.add_child(title_box)
 	var title_icon = TextureRect.new()
-	title_icon.texture = CONFIG_ICON
+	title_icon.texture = _sheet_icon(0, 0)
 	title_icon.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	title_icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	title_icon.custom_minimum_size = Vector2(96, 96)
 	title_box.add_child(title_icon)
 	var title = Label.new()
 	title.text = "CONFIGURAÇÕES"
@@ -950,50 +1012,23 @@ func setup_settings_screen() -> void:
 	title.add_theme_color_override("font_color", Color(0.85, 0.85, 0.9))
 	title_box.add_child(title)
 
-	# Linha do volume da música: ícone, slider e porcentagem
-	var panel = PanelContainer.new()
-	var panel_style = StyleBoxFlat.new()
-	panel_style.bg_color = Color(0.14, 0.14, 0.21)
-	panel_style.set_corner_radius_all(12)
-	panel_style.set_content_margin_all(24)
-	panel.add_theme_stylebox_override("panel", panel_style)
-	vbox.add_child(panel)
-
-	var row = HBoxContainer.new()
-	row.add_theme_constant_override("separation", 30)
-	panel.add_child(row)
-
-	var music_icon = TextureRect.new()
-	music_icon.texture = MUSIC_ICON
-	music_icon.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-	row.add_child(music_icon)
-
-	var text_box = VBoxContainer.new()
-	text_box.alignment = BoxContainer.ALIGNMENT_CENTER
-	row.add_child(text_box)
-	var music_label = Label.new()
-	music_label.text = "Música"
-	music_label.add_theme_font_size_override("font_size", 32)
-	music_label.add_theme_color_override("font_color", Color(0.95, 0.95, 0.95))
-	text_box.add_child(music_label)
-
-	music_slider = HSlider.new()
-	music_slider.min_value = 0
-	music_slider.max_value = 100
-	music_slider.step = 1
-	music_slider.custom_minimum_size = Vector2(520, 40)
-	_style_slider(music_slider, Color(0.4, 0.9, 0.5))
+	# Linhas de volume (música e sons): ícone, slider e porcentagem
+	var music_row := _make_volume_row(MUSIC_ICON, "Música", Color(0.4, 0.9, 0.5))
+	vbox.add_child(music_row.panel)
+	music_slider = music_row.slider
+	music_value_label = music_row.value_label
 	music_slider.value_changed.connect(_on_music_slider_changed)
 	music_slider.drag_ended.connect(func(_changed): AudioSettings.save())
-	text_box.add_child(music_slider)
 
-	music_value_label = Label.new()
-	music_value_label.custom_minimum_size = Vector2(130, 0)
-	music_value_label.add_theme_font_size_override("font_size", 36)
-	music_value_label.add_theme_color_override("font_color", Color(0.95, 0.8, 0.3))
-	music_value_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-	music_value_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	row.add_child(music_value_label)
+	var sfx_row := _make_volume_row(AUDIO_ICON, "Sons", Color(0.4, 0.7, 0.95))
+	vbox.add_child(sfx_row.panel)
+	sfx_slider = sfx_row.slider
+	sfx_value_label = sfx_row.value_label
+	sfx_slider.value_changed.connect(_on_sfx_slider_changed)
+	sfx_slider.drag_ended.connect(func(_changed):
+		AudioSettings.save()
+		sfx_preview.play() # dá para ouvir o volume ao soltar o slider
+	)
 
 	# Tela cheia (também alterna com F11)
 	var fullscreen_center = CenterContainer.new()
@@ -1004,6 +1039,8 @@ func setup_settings_screen() -> void:
 		_update_fullscreen_button()
 	)
 	fullscreen_center.add_child(fullscreen_button)
+	# No navegador a tela cheia é pelo botão da própria página (só funciona depois de um clique)
+	fullscreen_center.visible = not OS.has_feature("web")
 	_update_fullscreen_button()
 
 	var btn_back_center = CenterContainer.new()
@@ -1022,11 +1059,20 @@ func close_settings() -> void:
 	else:
 		show_start_screen()
 
+# Número da versão no canto inferior direito do menu.
+func _add_version_label(control: Control) -> void:
+	var label = Label.new()
+	label.text = GAME_VERSION
+	label.add_theme_font_size_override("font_size", 22)
+	label.add_theme_color_override("font_color", Color(0.5, 0.5, 0.6))
+	control.add_child(label)
+	label.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_RIGHT, Control.PRESET_MODE_MINSIZE, 20)
+
 # Botão de engrenagem no canto superior direito. `from_end_screen` diz para onde "Voltar" leva.
 func _add_settings_button(control: Control, from_end_screen: bool) -> void:
 	# TextureButton: mostra a imagem esticada até o tamanho do botão, sem depender do estilo de Button
 	var btn = TextureButton.new()
-	btn.texture_normal = CONFIG_ICON
+	btn.texture_normal = _sheet_icon(0, 0)
 	btn.ignore_texture_size = true
 	btn.stretch_mode = TextureButton.STRETCH_KEEP_ASPECT_CENTERED
 	btn.custom_minimum_size = CONFIG_BUTTON_SIZE
@@ -1045,12 +1091,66 @@ func show_settings_screen(from_end_screen: bool = false) -> void:
 	# Ajusta o slider ao volume atual sem disparar o callback
 	music_slider.set_value_no_signal(round(AudioSettings.get_music_volume() * 100.0))
 	_update_music_label()
+	sfx_slider.set_value_no_signal(round(AudioSettings.get_sfx_volume() * 100.0))
+	_update_sfx_label()
 	start_screen.visible = false
 	end_screen.visible = false
 	level_select_screen.visible = false
 	skins_screen.visible = false
 	settings_screen.visible = true
 	music_preview.play()
+
+# Painel com ícone, nome, slider e porcentagem; devolve o painel, o slider e o texto da porcentagem.
+func _make_volume_row(icon: Texture2D, label_text: String, color: Color) -> Dictionary:
+	var panel = PanelContainer.new()
+	var panel_style = StyleBoxFlat.new()
+	panel_style.bg_color = Color(0.14, 0.14, 0.21)
+	panel_style.set_corner_radius_all(12)
+	panel_style.set_content_margin_all(24)
+	panel.add_theme_stylebox_override("panel", panel_style)
+
+	var row = HBoxContainer.new()
+	row.add_theme_constant_override("separation", 30)
+	panel.add_child(row)
+
+	var icon_rect = TextureRect.new()
+	icon_rect.texture = icon
+	icon_rect.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	row.add_child(icon_rect)
+
+	var text_box = VBoxContainer.new()
+	text_box.alignment = BoxContainer.ALIGNMENT_CENTER
+	row.add_child(text_box)
+	var label = Label.new()
+	label.text = label_text
+	label.add_theme_font_size_override("font_size", 32)
+	label.add_theme_color_override("font_color", Color(0.95, 0.95, 0.95))
+	text_box.add_child(label)
+
+	var slider = HSlider.new()
+	slider.min_value = 0
+	slider.max_value = 100
+	slider.step = 1
+	slider.custom_minimum_size = Vector2(520, 40)
+	_style_slider(slider, color)
+	text_box.add_child(slider)
+
+	var value_label = Label.new()
+	value_label.custom_minimum_size = Vector2(130, 0)
+	value_label.add_theme_font_size_override("font_size", 36)
+	value_label.add_theme_color_override("font_color", Color(0.95, 0.8, 0.3))
+	value_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	value_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	row.add_child(value_label)
+
+	return {"panel": panel, "slider": slider, "value_label": value_label}
+
+func _on_sfx_slider_changed(value: float) -> void:
+	AudioSettings.set_sfx_volume(value / 100.0)
+	_update_sfx_label()
+
+func _update_sfx_label() -> void:
+	sfx_value_label.text = "%d%%" % int(sfx_slider.value)
 
 func _on_music_slider_changed(value: float) -> void:
 	AudioSettings.set_music_volume(value / 100.0)
@@ -1180,6 +1280,9 @@ func _begin_level(with_loading: bool) -> void:
 		transition_layer.visible = true
 		restart_game()
 
+	if current_level_id == TUTORIAL_ID:
+		await _show_tutorial()
+
 	await _run_countdown()
 
 	get_tree().paused = false
@@ -1201,6 +1304,214 @@ func _run_countdown() -> void:
 		await _wait(1.0)
 	countdown_label.visible = false
 	transition_layer.visible = false
+
+# ---------- Tutorial ----------
+
+# Janelinha por cima da fase (parada), com uma tela por vez. As setas azuis nos cantos
+# inferiores voltam/avançam; na última tela a da direita vira um X que fecha o tutorial.
+func _show_tutorial() -> void:
+	var layer := CanvasLayer.new()
+	layer.layer = 40
+	add_child(layer)
+
+	var dim := ColorRect.new()
+	dim.color = Color(0, 0, 0, 0.5)
+	dim.set_anchors_preset(Control.PRESET_FULL_RECT)
+	layer.add_child(dim)
+
+	var center := CenterContainer.new()
+	center.set_anchors_preset(Control.PRESET_FULL_RECT)
+	layer.add_child(center)
+
+	var panel := PanelContainer.new()
+	panel.custom_minimum_size = Vector2(1400, 780)
+	var style := StyleBoxFlat.new()
+	style.bg_color = Color(0.14, 0.14, 0.21)
+	style.border_color = Color(0.95, 0.8, 0.3)
+	style.set_border_width_all(4)
+	style.set_corner_radius_all(16)
+	style.set_content_margin_all(40)
+	panel.add_theme_stylebox_override("panel", style)
+	center.add_child(panel)
+
+	var vbox := VBoxContainer.new()
+	vbox.add_theme_constant_override("separation", 24)
+	panel.add_child(vbox)
+
+	var title := Label.new()
+	title.add_theme_font_size_override("font_size", 48)
+	title.add_theme_color_override("font_color", Color(0.95, 0.8, 0.3))
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	vbox.add_child(title)
+
+	var text := Label.new()
+	text.add_theme_font_size_override("font_size", 30)
+	text.add_theme_color_override("font_color", Color(0.95, 0.95, 0.95))
+	text.add_theme_constant_override("line_spacing", 12)
+	text.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	text.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	vbox.add_child(text)
+
+	var highlight := Label.new()
+	highlight.add_theme_font_size_override("font_size", 30)
+	highlight.add_theme_color_override("font_color", Color(0.4, 0.9, 0.4))
+	highlight.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	vbox.add_child(highlight)
+
+	var examples := HBoxContainer.new()
+	examples.alignment = BoxContainer.ALIGNMENT_CENTER
+	examples.add_theme_constant_override("separation", 100)
+	examples.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	vbox.add_child(examples)
+
+	var footer := HBoxContainer.new()
+	vbox.add_child(footer)
+	var back_btn := _make_tutorial_nav_button(_blue_arrow(), -PI / 2.0)
+	footer.add_child(back_btn.button)
+	var page_label := Label.new()
+	page_label.add_theme_font_size_override("font_size", 28)
+	page_label.add_theme_color_override("font_color", Color(0.75, 0.75, 0.82))
+	page_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	page_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	page_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	footer.add_child(page_label)
+	var next_btn := _make_tutorial_nav_button(_blue_arrow(), PI / 2.0)
+	footer.add_child(next_btn.button)
+
+	var page := [0]
+	var show_page := func():
+		var last: bool = page[0] == TUTORIAL_PAGES.size() - 1
+		var data: Dictionary = TUTORIAL_PAGES[page[0]]
+		title.text = data["title"]
+		text.text = data["text"]
+		highlight.text = data.get("highlight", "")
+		highlight.visible = highlight.text != ""
+		page_label.text = "%d / %d" % [page[0] + 1, TUTORIAL_PAGES.size()]
+		back_btn.button.disabled = page[0] == 0
+		back_btn.button.modulate.a = 0.0 if page[0] == 0 else 1.0
+		next_btn.icon.texture = X_SPRITE if last else _blue_arrow()
+		next_btn.icon.rotation = 0.0 if last else PI / 2.0
+		for child in examples.get_children():
+			child.queue_free()
+		if data.get("combo", false):
+			examples.add_child(_make_tutorial_combo())
+		if data.get("keys", false):
+			examples.add_child(_make_tutorial_keys())
+		for example in data.get("slimes", []):
+			examples.add_child(_make_tutorial_slime(example["scale"], example["label"]))
+	show_page.call()
+
+	back_btn.button.pressed.connect(func():
+		page[0] -= 1
+		show_page.call()
+	)
+	next_btn.button.pressed.connect(func():
+		page[0] += 1
+		if page[0] >= TUTORIAL_PAGES.size():
+			tutorial_finished.emit()
+		else:
+			show_page.call()
+	)
+	await tutorial_finished
+	layer.queue_free()
+
+# Seta azul (a primeira da ArrowSheet, apontando para cima).
+func _blue_arrow() -> Texture2D:
+	var atlas := AtlasTexture.new()
+	atlas.atlas = BLUE_ARROW_SHEET
+	atlas.region = Rect2(0, 0, 15, 15)
+	return atlas
+
+# Botão do rodapé do tutorial com a imagem no meio; devolve o botão e o TextureRect do ícone.
+func _make_tutorial_nav_button(texture: Texture2D, rotation_angle: float) -> Dictionary:
+	var btn := _make_menu_button("", Color(0.16, 0.16, 0.24), Vector2(120, 100), 32)
+	var icon := TextureRect.new()
+	icon.texture = texture
+	icon.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	icon.size = Vector2(60, 60)
+	icon.position = Vector2(30, 20)
+	icon.pivot_offset = icon.size / 2.0
+	icon.rotation = rotation_angle
+	icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	btn.add_child(icon)
+	return {"button": btn, "icon": icon}
+
+# Dois grupos de teclas: WASD e setinhas, no formato de "T" invertido, com "ou" no meio.
+func _make_tutorial_keys() -> Control:
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 80)
+	row.alignment = BoxContainer.ALIGNMENT_CENTER
+	# (coluna, linha) na folha: cima, esquerda, baixo, direita / W, A, S, D
+	row.add_child(_make_key_cluster([_sheet_icon(2, 1), _sheet_icon(0, 2), _sheet_icon(1, 2), _sheet_icon(2, 2)]))
+	var or_label := Label.new()
+	or_label.text = "ou"
+	or_label.add_theme_font_size_override("font_size", 40)
+	or_label.add_theme_color_override("font_color", Color(0.95, 0.95, 0.95))
+	or_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	row.add_child(or_label)
+	row.add_child(_make_key_cluster([_sheet_icon(1, 1), _sheet_icon(2, 0), _sheet_icon(0, 1), _sheet_icon(1, 0)]))
+	return row
+
+# icons = [cima, esquerda, baixo, direita]
+func _make_key_cluster(icons: Array) -> Control:
+	var grid := GridContainer.new()
+	grid.columns = 3
+	grid.add_theme_constant_override("h_separation", 6)
+	grid.add_theme_constant_override("v_separation", 6)
+	# linha de cima: vazio, cima, vazio; linha de baixo: esquerda, baixo, direita
+	var order: Array = [null, icons[0], null, icons[1], icons[2], icons[3]]
+	for icon in order:
+		var cell := TextureRect.new()
+		cell.custom_minimum_size = Vector2(120, 120)
+		cell.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		cell.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		cell.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+		cell.texture = icon
+		grid.add_child(cell)
+	return grid
+
+# Multiplicadores x1 a x5, cada um na cor que aparece no jogo e maior que o anterior.
+func _make_tutorial_combo() -> Control:
+	var row := HBoxContainer.new()
+	row.alignment = BoxContainer.ALIGNMENT_CENTER
+	row.add_theme_constant_override("separation", 40)
+	for m in range(1, 6):
+		var label := Label.new()
+		label.text = "x%d" % m
+		label.add_theme_font_override("font", PIXEL_FONT)
+		label.add_theme_font_size_override("font_size", 28 + (m - 1) * 14) # 28 a 84
+		label.add_theme_color_override("font_color", CollectEffect.LABEL_COLOR if m == 1 else CollectEffect.multiplier_color(m))
+		label.add_theme_color_override("font_outline_color", Color(0.05, 0.05, 0.08))
+		label.add_theme_constant_override("outline_size", 8)
+		label.vertical_alignment = VERTICAL_ALIGNMENT_BOTTOM
+		row.add_child(label)
+	return row
+
+# Minislime animado no tamanho dado, com o valor em pontos embaixo.
+func _make_tutorial_slime(sprite_scale: float, points: String) -> Control:
+	var box := VBoxContainer.new()
+	box.add_theme_constant_override("separation", 8)
+
+	var holder := Control.new()
+	holder.custom_minimum_size = Vector2(170, 170)
+	box.add_child(holder)
+	var sprite := AnimatedSprite2D.new()
+	sprite.sprite_frames = _get_selector_frames()
+	sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	sprite.scale = Vector2.ONE * sprite_scale
+	sprite.position = Vector2(85, 85)
+	holder.add_child(sprite)
+	sprite.play("default")
+
+	var label := Label.new()
+	label.text = points
+	label.add_theme_font_size_override("font_size", 40)
+	label.add_theme_color_override("font_color", Color(0.95, 0.8, 0.3))
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	box.add_child(label)
+	return box
 
 # ---------- Tela de créditos (álbum de fotos) ----------
 

@@ -55,7 +55,7 @@ const COMBO_PITCH_SEMITONES := 3.0
 const COLLECT_RANDOM_VOLUME_DB := 1.0
 
 # Combo: coletar outro minislime em até COMBO_WINDOW segundos aumenta o multiplicador (máx. COMBO_MAX)
-const COMBO_WINDOW := 3.0
+const COMBO_WINDOW := 3.5
 const COMBO_MAX := 5
 const RESPAWN_DELAY := 0.8 # tempo que o slime fica "morto" antes de renascer (s)
 var combo := 0
@@ -291,7 +291,7 @@ func respawn() -> void:
 	var new_char_body = new_character.get_node("CharacterBody2D")
 	new_char_body.score = new_score
 
-	# O combo não zera ao morrer: continua com o multiplicador, e a janela de 3 s segue
+	# O combo não zera ao morrer: continua com o multiplicador, e a janela de 3,5 s segue
 	# correndo enquanto o slime estava morto
 	new_char_body.combo = combo
 	new_char_body.combo_time_left = maxf(0.0, combo_time_left - RESPAWN_DELAY)

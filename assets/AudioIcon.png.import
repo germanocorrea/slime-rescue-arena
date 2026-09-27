@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bqusx4s8jyb4o"
-path="res://.godot/imported/tilesetLimpo2.png-a439ccca2d225c2e2413c46c4ed96a35.ctex"
+uid="uid://bx5r2a4fae55e"
+path="res://.godot/imported/AudioIcon.png-4acb70bff7872b73627bd04b887c0037.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/Tilesets/tilesetLimpo2.png"
-dest_files=["res://.godot/imported/tilesetLimpo2.png-a439ccca2d225c2e2413c46c4ed96a35.ctex"]
+source_file="res://assets/AudioIcon.png"
+dest_files=["res://.godot/imported/AudioIcon.png-4acb70bff7872b73627bd04b887c0037.ctex"]
 
 [params]
 
